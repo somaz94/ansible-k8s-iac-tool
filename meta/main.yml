@@ -5,13 +5,16 @@ galaxy_info:
   license: MIT  
   min_ansible_version: 2.9
   platforms:
+    - name: Debian
+      versions:
+        - all
     - name: Ubuntu
       versions:
         - all
-    - name: EL
+    - name: RHEL
       versions:
         - all
-    - name: RedHat
+    - name: CentOS
       versions:
         - all
   galaxy_tags:
