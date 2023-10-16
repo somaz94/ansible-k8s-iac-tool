@@ -1,0 +1,13 @@
+# kubectl
+source <(kubectl completion bash)
+alias k=kubectl
+complete -F __start_kubectl k
+
+# kubectl krew
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export KREW_NO_UPGRADE_CHECK=1
+
+# Additional bashrc configurations for installed packages
+complete -C /usr/bin/terraform terraform
+complete -C /usr/bin/packer packer
+export PATH=$PATH:$HOME/.pulumi/bin

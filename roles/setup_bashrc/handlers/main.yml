@@ -1,0 +1,4 @@
+---
+- name: reload bashrc
+  shell: "bash -i -c 'echo .bashrc reloaded'"
+  changed_when: false

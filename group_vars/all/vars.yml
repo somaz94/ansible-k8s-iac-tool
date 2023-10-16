@@ -1,0 +1,6 @@
+home_user: "somaz"
+krew_version: "v0.4.4"
+krew_plugins:
+  - "ctx"
+  - "neat"
+  - "ns"

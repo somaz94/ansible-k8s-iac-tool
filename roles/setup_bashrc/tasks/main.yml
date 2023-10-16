@@ -1,0 +1,26 @@
+---
+- name: Get home directory of specific user
+  shell: "eval echo ~{{ home_user }}"
+  register: user_home
+  changed_when: false
+
+- name: Append configurations to .bashrc for specific user
+  blockinfile:
+    path: "{{ user_home.stdout }}/.bashrc"
+    block: |
+      # kubectl
+      source <(kubectl completion bash)
+      alias k=kubectl
+      complete -F __start_kubectl k
+
+      # kubectl krew
+      export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+      # Additional bashrc configurations for installed packages
+      complete -C /usr/bin/terraform terraform
+      complete -C /usr/bin/packer packer
+      export PATH=$PATH:$HOME/.pulumi/bin
+  become: no
+  notify:
+    - reload bashrc
+

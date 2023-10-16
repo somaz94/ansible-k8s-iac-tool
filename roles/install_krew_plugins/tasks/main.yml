@@ -1,0 +1,32 @@
+---
+- name: Get home directory of specific user
+  shell: "eval echo ~{{ home_user }}"
+  register: user_home
+  changed_when: false
+
+- name: Check if krew plugin is already installed
+  shell: "kubectl krew list | grep -w {{ item }}"
+  with_items: "{{ krew_plugins }}"
+  register: installed_plugins
+  changed_when: false
+  failed_when: installed_plugins.rc > 1
+  when: krew_plugins is defined
+  environment:
+    KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
+    PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
+
+- name: Install krew plugins
+  shell: "kubectl krew install {{ item }}"
+  with_items: "{{ krew_plugins }}"
+  when: "item not in installed_plugins.results|map(attribute='stdout')|list and krew_plugins is defined"
+  args:
+    executable: /bin/bash
+  environment:
+    KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
+    PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
+  become: no
+  register: plugin_install_result
+  changed_when: "'Added plugin' in plugin_install_result.stdout"
+
+
+
