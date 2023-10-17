@@ -26,6 +26,7 @@ krew_plugins:
   - "ctx"
   - "neat"
   - "ns"
+  # more... 
 ```
 
 #### 2. Creating the Playbook
@@ -68,6 +69,7 @@ krew_plugins:
   - "ctx"
   - "neat"
   - "ns"
+  # more... 
 ```
 
 #### 2. Setting Up the Inventory File
