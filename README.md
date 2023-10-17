@@ -53,6 +53,8 @@ Execute the playbook with the following command:
 ansible-playbook site.yml
 ```
 
+<br/>
+
 ### Running Remotely
 
 1. Setting Up the Inventory File
@@ -88,6 +90,8 @@ Execute the playbook with the following command:
 ```bash
 ansible-playbook -i inventory.ini site.yml
 ```
+
+<br/>
 
 ### Post-Task Actions
 
