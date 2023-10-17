@@ -15,7 +15,7 @@ This Ansible role sets up various Kubernetes tooling components including kubect
 
 ### Running Locally
 
-1. Setting Up the Variable File
+#### 1. Setting Up the Variable File
 
 Define the necessary variables in the `vars.yml` file:
 ```bash
@@ -28,7 +28,7 @@ krew_plugins:
   - "ns"
 ```
 
-2. Creating the Playbook
+#### 2. Creating the Playbook
 
 Write the playbook in the `site.yml` file:
 ```bash
@@ -46,7 +46,7 @@ Write the playbook in the `site.yml` file:
     - somaz94.ansible-k8s-iac-tool/roles/install_packages
 ```
 
-3. Running the Playbook
+#### 3. Running the Playbook
 
 Execute the playbook with the following command:
 ```bash
@@ -57,7 +57,7 @@ ansible-playbook site.yml
 
 ### Running Remotely
 
-1. Setting Up the Inventory File
+#### 1. Setting Up the Inventory File
 
 Define the remote server information and connection details in the `inventory.ini` file:
 ```bash
@@ -66,7 +66,7 @@ Define the remote server information and connection details in the `inventory.in
 test-server ansible_ssh_user=somaz ansible_ssh_private_key_file=/home/somaz/.ssh/id_rsa_somaz94
 ```
 
-2. Creating the Playbook
+#### 2. Creating the Playbook
 
 Write the playbook in the `site.yml` file:
 ```bash
@@ -84,7 +84,7 @@ Write the playbook in the `site.yml` file:
     - somaz94.ansible-k8s-iac-tool/roles/install_packages
 ```
 
-3. Running the Playbook
+#### 3. Running the Playbook
 
 Execute the playbook with the following command:
 ```bash
