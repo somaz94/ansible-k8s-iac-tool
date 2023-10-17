@@ -1,9 +1,0 @@
----
-- hosts: localhost
-  become: yes
-  roles:
-    - setup_bashrc
-    - install_kubectl
-    - install_krew
-    - install_krew_plugins
-    - install_packages
