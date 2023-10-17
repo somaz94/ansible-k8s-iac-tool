@@ -29,6 +29,8 @@ krew_plugins:
   # more... 
 ```
 
+- For a comprehensive list of available krew plugins, visit the official [krew plugins directory](https://krew.sigs.k8s.io/plugins/).
+
 #### 2. Creating the Playbook
 
 Write the playbook in the `site.yml` file:
