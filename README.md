@@ -2,6 +2,13 @@
 
 This Ansible role sets up various Kubernetes tooling components including kubectl, krew, krew plugins, and additional packages.
 
+- kubectl
+- krew, krew plugins
+- additional packages
+  - terraform
+  - packer
+  - helm
+
 <br/>
 
 ## Requirements
