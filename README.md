@@ -4,10 +4,9 @@ This Ansible role sets up various Kubernetes tooling components including kubect
 
 - kubectl
 - krew, krew plugins
-- additional packages
-  - terraform
-  - packer
-  - helm
+- terraform
+- helm
+- packer
 
 <br/>
 
@@ -53,7 +52,9 @@ Write the playbook in the `site.yml` file:
     - somaz94.ansible-k8s-iac-tool/roles/install_kubectl
     - somaz94.ansible-k8s-iac-tool/roles/install_krew
     - somaz94.ansible-k8s-iac-tool/roles/install_krew_plugins
-    - somaz94.ansible-k8s-iac-tool/roles/install_packages
+    - somaz94.ansible-k8s-iac-tool/roles/install_terraform
+    - somaz94.ansible-k8s-iac-tool/roles/install_packer
+    - somaz94.ansible-k8s-iac-tool/roles/install_helm
 ```
 
 #### 3. Running the Playbook
@@ -105,7 +106,9 @@ Write the playbook in the `site.yml` file:
     - somaz94.ansible-k8s-iac-tool/roles/install_kubectl
     - somaz94.ansible-k8s-iac-tool/roles/install_krew
     - somaz94.ansible-k8s-iac-tool/roles/install_krew_plugins
-    - somaz94.ansible-k8s-iac-tool/roles/install_packages
+    - somaz94.ansible-k8s-iac-tool/roles/install_terraform
+    - somaz94.ansible-k8s-iac-tool/roles/install_packer
+    - somaz94.ansible-k8s-iac-tool/roles/install_helm
 ```
 
 #### 4. Running the Playbook

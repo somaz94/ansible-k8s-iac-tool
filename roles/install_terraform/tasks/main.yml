@@ -1,37 +1,9 @@
 ---
-- name: Check if Helm is installed
-  command: helm version
-  register: helm_check
-  failed_when: false
-  changed_when: false
-
-- name: Check if Packer is installed
-  command: packer --version
-  register: packer_check
-  failed_when: false
-  changed_when: false
-
 - name: Check if Terraform is installed
   command: terraform --version
   register: terraform_check
   failed_when: false
   changed_when: false
-
-- name: Download and install Helm
-  shell: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
-  when: helm_check.rc != 0 and "No such file or directory" in helm_check.msg
-
-- name: Install Packer for Debian/Ubuntu
-  block:
-    - name: Add HashiCorp GPG key (Debian/Ubuntu)
-      shell: "curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"
-    - name: Add HashiCorp repository (Debian/Ubuntu)
-      shell: "sudo apt-add-repository \"deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main\""
-    - name: Update apt and install Packer for (Debian/Ubuntu)
-      apt:
-        name: packer
-        update_cache: yes
-  when: ansible_os_family == 'Debian' and packer_check.rc != 0
 
 - name: Install yum-utils (if not already installed)
   yum:
@@ -53,16 +25,6 @@
         name: terraform
         update_cache: yes
   when: ansible_os_family == 'Debian' and terraform_check.rc != 0
-
-- name: Install Packer for RHEL
-  block:
-    - name: Setup HashiCorp repo for Packer (RHEL/CentOS)
-      shell: "sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
-    - name: Install Packer (RHEL/CentOS)
-      yum:
-        name: packer
-        state: present
-  when: ansible_os_family == 'RedHat' and packer_check.rc != 0
 
 - name: Install Terraform for RHEL
   block:

@@ -1,0 +1,10 @@
+---
+- name: Check if Helm is installed
+  command: helm version
+  register: helm_check
+  failed_when: false
+  changed_when: false
+
+- name: Download and install Helm
+  shell: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
+  when: helm_check.rc != 0 and "No such file or directory" in helm_check.msg
