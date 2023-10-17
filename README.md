@@ -110,10 +110,7 @@ The variables below can be modified in the `~/vars.yml` file as per your require
 
 - `home_user`: User for which the tooling setup should be applied. 
 - `krew_version`: Desired version of krew. Default: `v0.4.4`
-- `krew_plugins`: List of krew plugins to be installed. EX:
-  - `ctx`
-  - `neat`
-  - `ns`
+- `krew_plugins`: List of krew plugins to be installed.
 
 <br/>
 
