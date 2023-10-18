@@ -7,7 +7,17 @@ complete -F __start_kubectl k
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export KREW_NO_UPGRADE_CHECK=1
 
-# Additional bashrc configurations for installed packages
+# terraform
 complete -C /usr/bin/terraform terraform
+
+# packer
 complete -C /usr/bin/packer packer
+
+# pulumi
 export PATH=$PATH:$HOME/.pulumi/bin
+
+# helm
+sudo bash -c 'helm completion bash > /etc/bash_completion.d/helm'
+
+# kustomize
+source <(kustomize completion bash)

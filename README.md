@@ -7,6 +7,9 @@ This Ansible role sets up various Kubernetes tooling components including kubect
 - terraform
 - helm
 - packer
+- kustomize
+- pulumi
+- vagrant
 
 <br/>
 
@@ -54,7 +57,10 @@ Write the playbook in the `site.yml` file:
     - somaz94.ansible-k8s-iac-tool/roles/install_krew_plugins
     - somaz94.ansible-k8s-iac-tool/roles/install_terraform
     - somaz94.ansible-k8s-iac-tool/roles/install_packer
+    - somaz94.ansible-k8s-iac-tool/roles/install_vagrant
     - somaz94.ansible-k8s-iac-tool/roles/install_helm
+    - somaz94.ansible-k8s-iac-tool/roles/install_kustomize
+    - somaz94.ansible-k8s-iac-tool/roles/install_pulumi
 ```
 
 #### 3. Running the Playbook
@@ -108,7 +114,10 @@ Write the playbook in the `site.yml` file:
     - somaz94.ansible-k8s-iac-tool/roles/install_krew_plugins
     - somaz94.ansible-k8s-iac-tool/roles/install_terraform
     - somaz94.ansible-k8s-iac-tool/roles/install_packer
+    - somaz94.ansible-k8s-iac-tool/roles/install_vagrant
     - somaz94.ansible-k8s-iac-tool/roles/install_helm
+    - somaz94.ansible-k8s-iac-tool/roles/install_kustomize
+    - somaz94.ansible-k8s-iac-tool/roles/install_pulumi
 ```
 
 #### 4. Running the Playbook

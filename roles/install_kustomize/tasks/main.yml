@@ -1,0 +1,14 @@
+---
+- name: Check if Kustomize is installed
+  command: kustomize version
+  register: kustomize_check
+  failed_when: false
+  changed_when: false
+
+- name: Download and install Kustomize
+  shell: "curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash"
+  when: kustomize_check.rc != 0 and "No such file or directory" in kustomize_check.msg
+
+- name: Move kustomize to /usr/local/bin if not present
+  shell: "sudo mv kustomize /usr/local/bin/"
+  when: kustomize_check.rc != 0 and "No such file or directory" in kustomize_check.msg

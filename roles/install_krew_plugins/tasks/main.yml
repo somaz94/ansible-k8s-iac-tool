@@ -15,10 +15,13 @@
     KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
     PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
 
-- name: Install krew plugins
+- name: Install krew plugins for Debian/Ubuntu
   shell: "kubectl krew install {{ item }}"
   with_items: "{{ krew_plugins }}"
-  when: "item not in installed_plugins.results|map(attribute='stdout')|list and krew_plugins is defined"
+  when: 
+    - krew_plugins is defined
+    - "item not in installed_plugins.results|map(attribute='stdout')|list"
+    - ansible_os_family == 'Debian'
   args:
     executable: /bin/bash
   environment:
@@ -28,5 +31,21 @@
   register: plugin_install_result
   changed_when: "'Added plugin' in plugin_install_result.stdout"
 
+- name: Install krew plugins for RHEL/CentOS
+  shell: "kubectl krew install {{ item }}"
+  with_items: "{{ krew_plugins }}"
+  when: 
+    - krew_plugins is defined
+    - "item not in installed_plugins.results|map(attribute='stdout')|list"
+    - ansible_os_family == 'RedHat'
+  args:
+    executable: /bin/bash
+  environment:
+    KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
+    PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+  become: no
+  register: plugin_install_result
+  changed_when: "'Added plugin' in plugin_install_result.stdout"
 
 
+  

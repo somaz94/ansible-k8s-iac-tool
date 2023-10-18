@@ -20,4 +20,9 @@
     - role: roles/install_kubectl
     - role: roles/install_krew
     - role: roles/install_krew_plugins
-    - role: roles/install_packages
+    - role: roles/install_terraform
+    - role: roles/install_packer
+    - role: roles/install_vagrant
+    - role: roles/install_helm
+    - role: roles/install_pulumi
+    - role: roles/install_kustomize

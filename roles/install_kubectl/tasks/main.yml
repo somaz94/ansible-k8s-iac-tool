@@ -26,8 +26,7 @@
   register: latest_kubectl_version
   changed_when: false
 
-## Ubuntu/Debian
-- name: Install kubectl using binary on Debian
+- name: Install kubectl using binary 
   block:
     - name: Download kubectl binary
       get_url:
@@ -48,36 +47,3 @@
         path: "/tmp/kubectl"
         state: absent
       when: not kubectl_installed or (installed_kubectl_version.stdout is defined and installed_kubectl_version.stdout != latest_kubectl_version.stdout)
-  when: ansible_os_family == 'Debian'
-
-## RHEL
-- name: Install kubectl on RHEL
-  block:
-    - name: Add Kubernetes repo based on RHEL version
-      copy:
-        content: |
-          [kubernetes]
-          name=Kubernetes
-          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
-          enabled=1
-          gpgcheck=1
-          gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-        dest: /etc/yum.repos.d/kubernetes.repo
-      become: yes
-
-    - name: Check current installed kubectl version on RHEL
-      command: yum list installed kubectl --showduplicates | grep kubectl | awk '{print $2}' | cut -d- -f1
-      register: rhel_installed_kubectl_version
-      changed_when: false
-      failed_when: false
-      when: kubectl_installed
-
-    - name: Install kubectl using yum
-      yum:
-        name: "kubectl"
-        state: present
-      become: yes
-      when: not kubectl_installed or (rhel_installed_kubectl_version.stdout is defined and rhel_installed_kubectl_version.stdout != latest_kubectl_version.stdout)
-  when:
-    - ansible_os_family == 'RedHat'
-

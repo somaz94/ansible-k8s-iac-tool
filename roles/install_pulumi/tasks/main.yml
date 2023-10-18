@@ -1,0 +1,54 @@
+---
+- name: Check if Pulumi binary exists in user's home directory
+  stat:
+    path: "{{ user_home }}/.pulumi/bin/pulumi" 
+  register: pulumi_binary
+
+- name: Debug Pulumi binary existence
+  debug:
+    var: pulumi_binary.stat.exists
+
+- name: Check if Pulumi is installed if binary exists
+  command: "{{ user_home }}/.pulumi/bin/pulumi version"
+  register: pulumi_check
+  failed_when: false
+  changed_when: false
+  ignore_errors: true
+  when: pulumi_binary.stat.exists
+
+- name: Debug Pulumi version output
+  debug:
+    var: pulumi_check.stdout
+  when: pulumi_binary.stat.exists
+
+- name: Debug Pulumi version error output
+  debug:
+    var: pulumi_check.stderr
+  when: pulumi_binary.stat.exists
+
+- name: Determine if Pulumi is already installed
+  set_fact:
+    pulumi_installed: "{{ pulumi_binary.stat.exists and (('v' in (pulumi_check.stdout | default(''))) or ('v' in (pulumi_check.stderr | default('')))) }}"
+  changed_when: false
+
+- name: Debug pulumi_installed value
+  debug:
+    var: pulumi_installed
+
+- name: Get home directory of specific user
+  shell: "eval echo ~{{ home_user }}"
+  register: user_home_dir
+  changed_when: false
+
+- name: Set user home variable
+  set_fact:
+    user_home: "{{ user_home_dir.stdout }}"
+
+- name: Download and install Pulumi in user's home directory
+  shell: "curl -fsSL https://get.pulumi.com | sh"
+  args:
+    chdir: "{{ user_home }}" 
+  become: yes
+  become_user: "{{ home_user }}"
+  when: not pulumi_installed
+  changed_when: true 

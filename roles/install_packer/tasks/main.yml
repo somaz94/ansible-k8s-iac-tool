@@ -1,16 +1,24 @@
 ---
-- name: Check if Packer is installed
-  command: packer --version
-  register: packer_check
+- name: Check if Packer is installed Debian/Ubuntu
+  command: packer version
+  register: packer_check_debian
   failed_when: false
   changed_when: false
+  when: ansible_os_family == 'Debian'
 
-- name: Install yum-utils (if not already installed)
+- name: Check if Packer is installed RHEL/CentOS
+  command: which packer
+  register: packer_check_rhel
+  failed_when: false
+  changed_when: false
+  when: ansible_os_family == 'RedHat'
+
+- name: Install yum-utils RHEL/CentOS
   yum:
-    name: yum-utils (RHEL/CentOS)
+    name: yum-utils 
     state: present
   become: yes
-  when: ansible_os_family == 'RedHat' and terraform_check.rc != 0
+  when: ansible_os_family == 'RedHat' and packer_check_rhel.rc != 0
 
 - name: Install Packer for Debian/Ubuntu
   block:
@@ -22,9 +30,9 @@
       apt:
         name: packer
         update_cache: yes
-  when: ansible_os_family == 'Debian' and packer_check.rc != 0
+  when: ansible_os_family == 'Debian' and packer_check_debian.rc != 0
 
-- name: Install Packer for RHEL
+- name: Install Packer for RHEL/CentOS
   block:
     - name: Setup HashiCorp repo for Packer (RHEL/CentOS)
       shell: "sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
@@ -32,4 +40,31 @@
       yum:
         name: packer
         state: present
-  when: ansible_os_family == 'RedHat' and packer_check.rc != 0
+  when: ansible_os_family == 'RedHat' and packer_check_rhel.rc != 0
+
+- name: Check location of packer
+  command: which packer
+  register: packer_location
+  changed_when: false
+  when: ansible_os_family == 'RedHat'
+
+- name: Debug packer location
+  debug:
+    var: packer_location.stdout
+  when: ansible_os_family == 'RedHat'
+
+- name: Remove packer from /sbin
+  file:
+    path: /sbin/packer
+    state: absent
+  become: yes
+  when: 
+    - ansible_os_family == 'RedHat'
+    - packer_location.stdout == "/sbin/packer"
+
+- name: Create symbolic link for packer in /sbin/
+  command: ln -s /usr/bin/packer /sbin/packer
+  become: yes
+  when: 
+    - ansible_os_family == 'RedHat'
+    - packer_location.stdout == "/sbin/packer"

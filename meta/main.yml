@@ -21,5 +21,11 @@ galaxy_info:
     - kubernetes
     - kubectl
     - krew
+    - terraform
+    - packer
+    - vagrant
+    - helm
+    - kustomize
+    - pulumi
 
 dependencies: []

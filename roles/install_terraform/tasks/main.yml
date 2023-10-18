@@ -1,13 +1,13 @@
 ---
 - name: Check if Terraform is installed
-  command: terraform --version
+  command: which terraform
   register: terraform_check
   failed_when: false
   changed_when: false
 
-- name: Install yum-utils (if not already installed)
+- name: Install yum-utils for RHEL/CentOS
   yum:
-    name: yum-utils (RHEL/CentOS)
+    name: yum-utils 
     state: present
   become: yes
   when: ansible_os_family == 'RedHat' and terraform_check.rc != 0
@@ -26,7 +26,7 @@
         update_cache: yes
   when: ansible_os_family == 'Debian' and terraform_check.rc != 0
 
-- name: Install Terraform for RHEL
+- name: Install Terraform for RHEL/CentOS
   block:
     - name: Setup HashiCorp repo for Terraform (RHEL/CentOS)
       shell: "sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
