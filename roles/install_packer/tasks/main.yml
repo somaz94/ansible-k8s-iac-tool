@@ -7,7 +7,7 @@
   when: ansible_os_family == 'Debian'
 
 - name: Check if Packer is installed RHEL/CentOS
-  command: packer version
+  command: which packer
   register: packer_check_rhel
   failed_when: false
   changed_when: false
