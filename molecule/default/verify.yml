@@ -9,21 +9,25 @@
       command: kubectl version --client
       register: kubectl_result
       failed_when: kubectl_result.rc != 0
+      changed_when: false
 
     - name: Check if krew is installed
       command: "/home/{{ home_user }}/.krew/bin/kubectl-krew version"
       register: krew_result
       failed_when: krew_result.rc != 0
+      changed_when: false
 
     - name: Check if helm is installed
       command: which helm
       register: helm_result
       failed_when: helm_result.rc != 0
+      changed_when: false
 
     - name: Check if terraform is installed
       command: which terraform
       register: terraform_result
       failed_when: terraform_result.rc != 0
+      changed_when: false
 
     - name: Check if Packer is installed Debian/Ubuntu
       command: packer version
@@ -43,6 +47,7 @@
       command: which vagrant
       register: vagrant_result
       failed_when: vagrant_result.rc != 0
+      changed_when: false
 
     - name: Check if Pulumi binary exists in user's home directory
       stat:
@@ -65,5 +70,6 @@
       command: kustomize version
       register: kustomize_result
       failed_when: kustomize_result.rc != 0
+      changed_when: false
 
     # ... and so on for other tools you've installed.
