@@ -1,15 +1,17 @@
 # ansible k8s iac tool
 
-This Ansible role sets up various Kubernetes tooling components including kubectl, krew, krew plugins, and additional packages.
+This Ansible collection is dedicated to setting up Kubernetes tooling. The collection comprises several roles, each focusing on a specific tool or configuration:
 
-- kubectl
-- krew, krew plugins
-- terraform
-- helm
-- packer
-- kustomize
-- pulumi
-- vagrant
+- `install_kubectl`: Sets up kubectl.
+- `install_krew`: Sets up krew.
+- `install_krew_plugins`: Installs specified krew plugins.
+- `install_terraform`: Sets up terraform.
+- `install_helm`: Sets up helm.
+- `install_packer`: Sets up packer.
+- `install_kustomize`: Sets up kustomize.
+- `install_pulumi`: Sets up pulumi.
+- `install_vagrant`: Sets up vagrant.
+- `setup_bashrc`: Adds specific configurations to the bashrc.
 
 <br/>
 
