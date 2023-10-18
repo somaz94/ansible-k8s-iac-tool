@@ -16,7 +16,7 @@ This Ansible role sets up various Kubernetes tooling components including kubect
 ## Requirements
 
 - Ansible 2.9 or higher
-- Targeted OS: Ubuntu/RHEL (For now)
+- Targeted OS: Deiban/Ubuntu, RHEL/CentOS (For now)
 
 <br/>
 
