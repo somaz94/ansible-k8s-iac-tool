@@ -4,10 +4,18 @@
   become: true
 
   pre_tasks:
+    - name: Include group_vars
+      include_vars: ../../group_vars/all/vars.yml
+
+    - name: Add user somaz
+      user:
+        name: "{{ home_user }}"
+        shell: /bin/bash
+        createhome: yes
+
     - name: Update apt cache.
       apt: 
         update_cache: yes
-        cache_valid_time: 600
       when: ansible_os_family == 'Debian'
 
     - name: Update yum cache.
@@ -26,3 +34,17 @@
     - role: roles/install_helm
     - role: roles/install_pulumi
     - role: roles/install_kustomize
+
+  post_tasks:
+    - name: Notify about .bashrc reload
+      debug:
+        msg: ".bashrc will be reloaded on the next session."
+      changed_when: false
+
+    - name: Set ownership for .krew directory
+      file:
+        path: "~{{ home_user }}/.krew"
+        owner: "{{ home_user }}"
+        group: "{{ home_user }}"
+        recurse: yes
+        state: directory

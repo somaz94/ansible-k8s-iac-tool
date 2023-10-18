@@ -1,5 +1,69 @@
 ---
 - name: Verify
   hosts: all
-  tasks: []
+  tasks:
+    - name: Include group_vars
+      include_vars: ../../group_vars/all/vars.yml
 
+    - name: Check if kubectl is installed
+      command: kubectl version --client
+      register: kubectl_result
+      failed_when: kubectl_result.rc != 0
+
+    - name: Check if krew is installed
+      command: "/home/{{ home_user }}/.krew/bin/kubectl-krew version"
+      register: krew_result
+      failed_when: krew_result.rc != 0
+
+    - name: Check if helm is installed
+      command: which helm
+      register: helm_result
+      failed_when: helm_result.rc != 0
+
+    - name: Check if terraform is installed
+      command: which terraform
+      register: terraform_result
+      failed_when: terraform_result.rc != 0
+
+    - name: Check if Packer is installed Debian/Ubuntu
+      command: packer version
+      register: packer_check_debian
+      failed_when: false
+      changed_when: false
+      when: ansible_os_family == 'Debian'
+
+    - name: Check if Packer is installed RHEL/CentOS
+      command: which packer
+      register: packer_check_rhel
+      failed_when: false
+      changed_when: false
+      when: ansible_os_family == 'RedHat'
+
+    - name: Check if vagrant is installed
+      command: which vagrant
+      register: vagrant_result
+      failed_when: vagrant_result.rc != 0
+
+    - name: Check if Pulumi binary exists in user's home directory
+      stat:
+        path: "/home/{{ home_user }}/.pulumi/bin/pulumi" 
+      register: pulumi_binary
+
+    - name: Debug Pulumi binary existence
+      debug:
+        var: pulumi_binary.stat.exists
+
+    - name: Check if Pulumi is installed if binary exists
+      command: "/home/{{ home_user }}/.pulumi/bin/pulumi version"
+      register: pulumi_check
+      failed_when: false
+      changed_when: false
+      ignore_errors: true
+      when: pulumi_binary.stat.exists
+
+    - name: Check if kustomize is installed
+      command: kustomize version
+      register: kustomize_result
+      failed_when: kustomize_result.rc != 0
+
+    # ... and so on for other tools you've installed.

@@ -5,7 +5,7 @@
   failed_when: false
   changed_when: false
 
-- name: Ensure git is installed
+- name: Ensure git is installed RHEL/CentOS
   yum:
     name: git
     state: present

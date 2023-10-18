@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  author: somaz
+  description: Ansible role to install terraform
+  license: MIT
+  min_ansible_version: 2.9
+  role_name: install_terraform
+  platforms:
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: RHEL
+      versions:
+        - all
+    - name: CentOS
+      versions:
+        - all
+  galaxy_tags:
+    - terraform
+
+dependencies: []

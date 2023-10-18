@@ -20,6 +20,12 @@
     installed_kubectl_version: "{{ installed_kubectl_version.stdout.split('\n')[0].split(': ')[1] }}"
   when: kubectl_installed
 
+- name: Add required tools (Debian/Ubuntu)
+  shell: |
+    apt-get update && sudo apt-get install -y gnupg software-properties-common wget curl git
+  when: ansible_os_family == 'Debian'
+  become: yes
+
 - name: Retrieve the latest kubectl version
   command:
     cmd: "curl -L -s https://dl.k8s.io/release/stable.txt"
