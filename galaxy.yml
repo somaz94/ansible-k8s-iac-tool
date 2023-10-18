@@ -1,0 +1,21 @@
+namespace: somaz94
+name: ansible_k8s_iac_tool
+version: 1.0.0
+readme: README.md
+authors:
+  - somaz genius5711@gmail.com
+description: Collection of Ansible roles for Kubernetes tooling setup and etc..
+license_file: LICENSE
+tags:
+  - kubernetes
+  - tooling
+  - helm
+  - krew
+  - kubectl
+  - kustomize
+  - packer
+  - pulumi
+  - terraform
+  - vagrant
+dependencies: {}
+repository: https://github.com/somaz94/ansible-k8s-iac-tool
