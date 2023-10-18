@@ -51,18 +51,20 @@ Write the playbook in the `site.yml` file:
 - hosts: localhost
   become: yes
   vars_files:
-    - path_to_your_vars_file/vars.yml
+    - ~/vars.yml
+  collections:
+    - somaz94.ansible_k8s_iac_tool
   roles:
-    - somaz94.ansible-k8s-iac-tool/roles/setup_bashrc
-    - somaz94.ansible-k8s-iac-tool/roles/install_kubectl
-    - somaz94.ansible-k8s-iac-tool/roles/install_krew
-    - somaz94.ansible-k8s-iac-tool/roles/install_krew_plugins
-    - somaz94.ansible-k8s-iac-tool/roles/install_terraform
-    - somaz94.ansible-k8s-iac-tool/roles/install_packer
-    - somaz94.ansible-k8s-iac-tool/roles/install_vagrant
-    - somaz94.ansible-k8s-iac-tool/roles/install_helm
-    - somaz94.ansible-k8s-iac-tool/roles/install_kustomize
-    - somaz94.ansible-k8s-iac-tool/roles/install_pulumi
+    - setup_bashrc
+    - install_kubectl
+    - install_krew
+    - install_krew_plugins
+    - install_terraform
+    - install_packer
+    - install_vagrant
+    - install_helm
+    - install_kustomize
+    - install_pulumi
 ```
 
 #### 3. Running the Playbook
@@ -105,21 +107,23 @@ Write the playbook in the `site.yml` file:
 ```bash
 # site.yml
 ---
-- hosts: test_servers
+- hosts: <hosts> # Remote Server
   become: yes
   vars_files:
-    - path_to_your_vars_file/vars.yml
+    - ~/vars.yml
+  collections:
+    - somaz94.ansible_k8s_iac_tool
   roles:
-    - somaz94.ansible-k8s-iac-tool/roles/setup_bashrc
-    - somaz94.ansible-k8s-iac-tool/roles/install_kubectl
-    - somaz94.ansible-k8s-iac-tool/roles/install_krew
-    - somaz94.ansible-k8s-iac-tool/roles/install_krew_plugins
-    - somaz94.ansible-k8s-iac-tool/roles/install_terraform
-    - somaz94.ansible-k8s-iac-tool/roles/install_packer
-    - somaz94.ansible-k8s-iac-tool/roles/install_vagrant
-    - somaz94.ansible-k8s-iac-tool/roles/install_helm
-    - somaz94.ansible-k8s-iac-tool/roles/install_kustomize
-    - somaz94.ansible-k8s-iac-tool/roles/install_pulumi
+    - setup_bashrc
+    - install_kubectl
+    - install_krew
+    - install_krew_plugins
+    - install_terraform
+    - install_packer
+    - install_vagrant
+    - install_helm
+    - install_kustomize
+    - install_pulumi
 ```
 
 #### 4. Running the Playbook

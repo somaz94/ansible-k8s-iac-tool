@@ -23,8 +23,32 @@ None.
 
 To use this role, include it in your playbook as follows:
 
+### local
 ```bash
-roles:
-  - somaz94.ansible-k8s-iac-tool/roles/install_packer
-  - somaz94.ansible-k8s-iac-tool/roles/setup_bashrc
+# site.yml
+---
+- hosts: localhost
+  become: yes
+  vars_files:
+    - ~/vars.yml
+  collections:
+    - somaz94.ansible_k8s_iac_tool
+  roles:
+    - install_packer
+    - setup_bashrc
+```
+
+### Remote
+```bash
+# site.yml
+---
+- hosts: <hosts> # Remote Server
+  become: yes
+  vars_files:
+    - ~/vars.yml
+  collections:
+    - somaz94.ansible_k8s_iac_tool
+  roles:
+    - install_packer
+    - setup_bashrc
 ```

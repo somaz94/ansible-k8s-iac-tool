@@ -24,6 +24,14 @@ None.
 To use this role, include it in your playbook as follows:
 
 ```bash
-roles:
-  - somaz94.ansible-k8s-iac-tool/roles/install_helm
+# site.yml
+---
+- hosts: localhost
+  become: yes
+  vars_files:
+    - ~/vars.yml
+  collections:
+    - somaz94.ansible_k8s_iac_tool
+  roles:
+    - install_helm
 ```
