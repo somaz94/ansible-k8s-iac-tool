@@ -8,19 +8,24 @@
   blockinfile:
     path: "{{ user_home.stdout }}/.bashrc"
     block: |
-      # kubectl
+      # kubectl configurations
       source <(kubectl completion bash)
       alias k=kubectl
       complete -F __start_kubectl k
-
-      # kubectl krew
-      export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+      
+      # kubectl krew configurations
+      if [ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]; then
+        export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+      fi
 
       # Additional bashrc configurations for installed packages
       complete -C /usr/bin/terraform terraform
       complete -C /usr/bin/packer packer
-      export PATH=$PATH:$HOME/.pulumi/bin
+
+      # pulumi configurations
+      if [ -d "$HOME/.pulumi/bin" ]; then
+        export PATH="$PATH:$HOME/.pulumi/bin"
+      fi
   become: no
   notify:
     - reload bashrc
-
