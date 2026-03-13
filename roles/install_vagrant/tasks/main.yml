@@ -7,33 +7,52 @@
 
 - name: Install yum-utils RHEL/CentOS
   yum:
-    name: yum-utils 
+    name: yum-utils
     state: present
   become: true
   when: ansible_os_family == 'RedHat' and vagrant_check.rc != 0
 
 - name: Install Vagrant for Debian/Ubuntu
   block:
+    - name: Install prerequisites (Debian/Ubuntu)
+      apt:
+        name:
+          - gnupg
+          - software-properties-common
+        state: present
+        update_cache: true
+      become: true
+
     - name: Add HashiCorp GPG key (Debian/Ubuntu)
-      shell: |
-        sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
-        wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+      shell: "wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null"
+      args:
+        creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+      become: true
+
     - name: Add HashiCorp repository (Debian/Ubuntu)
-      shell: |
-        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+      shell: 'echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list'
+      args:
+        creates: /etc/apt/sources.list.d/hashicorp.list
+      become: true
+
     - name: Update apt and install Vagrant for (Debian/Ubuntu)
       apt:
         name: vagrant
         update_cache: true
+      become: true
   when: ansible_os_family == 'Debian' and vagrant_check.rc != 0
 
 - name: Install Vagrant for RHEL/CentOS
   block:
     - name: Setup HashiCorp repo for Vagrant (RHEL/CentOS)
-      shell: "sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
+      shell: "yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
+      args:
+        creates: /etc/yum.repos.d/hashicorp.repo
+      become: true
+
     - name: Install Vagrant (RHEL/CentOS)
       yum:
         name: vagrant
         state: present
+      become: true
   when: ansible_os_family == 'RedHat' and vagrant_check.rc != 0
-

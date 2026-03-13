@@ -9,21 +9,16 @@
   set_fact:
     kubectl_installed: "{{ kubectl_check.rc == 0 }}"
 
-- name: Get installed kubectl version
-  command: kubectl version --client -short | awk '/Client/ {print $3}'
-  register: installed_kubectl_version
-  failed_when: false
-  changed_when: false
-  when: kubectl_installed
-
-- name: Set installed kubectl version fact
-  set_fact:
-    installed_kubectl_version: "{{ installed_kubectl_version.stdout.split('\n')[0].split(': ')[1] }}"
-  when: kubectl_installed
-
 - name: Add required tools (Debian/Ubuntu)
-  shell: |
-    apt-get update && sudo apt-get install -y gnupg software-properties-common wget curl git
+  apt:
+    name:
+      - gnupg
+      - software-properties-common
+      - wget
+      - curl
+      - git
+    state: present
+    update_cache: true
   when: ansible_os_family == 'Debian'
   become: true
 
@@ -33,24 +28,27 @@
   register: latest_kubectl_version
   changed_when: false
 
-- name: Install kubectl using binary 
+- name: Install kubectl using binary
   block:
     - name: Download kubectl binary
       get_url:
         url: "https://dl.k8s.io/release/{{ latest_kubectl_version.stdout }}/bin/linux/amd64/kubectl"
         dest: "/tmp/kubectl"
         mode: '0755'
-        force: no
-      when: not kubectl_installed or (installed_kubectl_version.stdout is defined and installed_kubectl_version.stdout != latest_kubectl_version.stdout)
+        force: false
 
     - name: Install kubectl
-      command:
-        cmd: "sudo install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl"
+      copy:
+        src: "/tmp/kubectl"
+        dest: "/usr/local/bin/kubectl"
+        owner: root
+        group: root
+        mode: '0755'
+        remote_src: true
       become: true
-      when: not kubectl_installed or (installed_kubectl_version.stdout is defined and installed_kubectl_version.stdout != latest_kubectl_version.stdout)
 
     - name: Clean up the downloaded binary
       file:
         path: "/tmp/kubectl"
         state: absent
-      when: not kubectl_installed or (installed_kubectl_version.stdout is defined and installed_kubectl_version.stdout != latest_kubectl_version.stdout)
+  when: not kubectl_installed
