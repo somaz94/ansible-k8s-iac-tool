@@ -13,6 +13,7 @@ An Ansible collection for automating the installation and configuration of Kuber
 
 | Role | Description |
 |------|-------------|
+| `setup_shell` | Configure shell completions and PATH (bash, zsh, fish) |
 | `install_kubectl` | Install and configure kubectl |
 | `install_krew` | Install krew (kubectl plugin manager) |
 | `install_krew_plugins` | Install specified krew plugins |
@@ -22,7 +23,6 @@ An Ansible collection for automating the installation and configuration of Kuber
 | `install_vagrant` | Install HashiCorp Vagrant |
 | `install_kustomize` | Install Kustomize |
 | `install_pulumi` | Install Pulumi |
-| `setup_bashrc` | Configure shell completions and PATH |
 
 <br/>
 
@@ -30,6 +30,7 @@ An Ansible collection for automating the installation and configuration of Kuber
 
 - Ansible 2.9+
 - Supported OS: Ubuntu 22.04+, Debian 11+, Rocky Linux 9+, Fedora 40+
+- Supported Shells: bash, zsh, fish
 
 <br/>
 
@@ -49,6 +50,10 @@ Define variables in `vars.yml`:
 
 ```yaml
 home_user: "somaz"
+user_shells:
+  - bash          # default
+  # - zsh         # optional: configure .zshrc
+  # - fish        # optional: configure fish config
 krew_version: "v0.4.4"
 krew_plugins:
   - ctx
@@ -60,6 +65,7 @@ krew_plugins:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `home_user` | Target user for tooling setup | - |
+| `user_shells` | List of shells to configure (`bash`, `zsh`, `fish`) | `[bash]` |
 | `krew_version` | Krew version to install | `v0.4.4` |
 | `krew_plugins` | List of krew plugins to install | `[]` |
 
@@ -77,7 +83,7 @@ krew_plugins:
   collections:
     - somaz94.ansible_k8s_iac_tool
   roles:
-    - setup_bashrc
+    - setup_shell
     - install_kubectl
     - install_krew
     - install_krew_plugins
@@ -113,7 +119,7 @@ my-server ansible_ssh_user=somaz ansible_ssh_private_key_file=~/.ssh/id_rsa
   collections:
     - somaz94.ansible_k8s_iac_tool
   roles:
-    - setup_bashrc
+    - setup_shell
     - install_kubectl
     - install_krew
     - install_krew_plugins
@@ -136,7 +142,14 @@ ansible-playbook -i inventory.ini site.yml
 After the playbook completes, reload the shell configuration:
 
 ```bash
+# bash
 source ~/.bashrc
+
+# zsh
+source ~/.zshrc
+
+# fish (new session or)
+source ~/.config/fish/conf.d/k8s-iac-tools.fish
 ```
 
 <br/>

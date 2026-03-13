@@ -1,6 +1,8 @@
 ---
 - name: Get home directory of specific user
   shell: "eval echo ~{{ home_user }}"
+  args:
+    executable: /bin/bash
   register: user_home_dir
   changed_when: false
 
@@ -29,6 +31,7 @@
 - name: Download and install Pulumi in user's home directory
   shell: "curl -fsSL https://get.pulumi.com | sh"
   args:
+    executable: /bin/bash
     chdir: "{{ user_home }}"
   become: true
   become_user: "{{ home_user }}"

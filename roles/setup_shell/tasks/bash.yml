@@ -1,9 +1,4 @@
 ---
-- name: Get home directory of specific user
-  shell: "eval echo ~{{ home_user }}"
-  register: user_home
-  changed_when: false
-
 - name: Append configurations to .bashrc for specific user
   blockinfile:
     path: "{{ user_home.stdout }}/.bashrc"
@@ -12,7 +7,7 @@
       source <(kubectl completion bash)
       alias k=kubectl
       complete -F __start_kubectl k
-      
+
       # kubectl krew configurations
       if [ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]; then
         export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
@@ -28,4 +23,4 @@
       fi
   become: false
   notify:
-    - reload bashrc
+    - reload shell

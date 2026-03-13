@@ -1,11 +1,15 @@
 ---
 - name: Get home directory of specific user
   shell: "eval echo ~{{ home_user }}"
+  args:
+    executable: /bin/bash
   register: user_home
   changed_when: false
 
 - name: Check if krew plugin is already installed
   shell: "kubectl krew list | grep -w {{ item }}"
+  args:
+    executable: /bin/bash
   with_items: "{{ krew_plugins }}"
   register: installed_plugins
   changed_when: false

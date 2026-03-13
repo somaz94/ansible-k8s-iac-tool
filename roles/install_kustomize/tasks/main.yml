@@ -7,6 +7,8 @@
 
 - name: Download and install Kustomize
   shell: "curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash"
+  args:
+    executable: /bin/bash
   when: kustomize_check.rc != 0
   changed_when: true
 

@@ -24,7 +24,7 @@
       when: ansible_os_family == 'RedHat'
 
   roles:
-    - role: setup_bashrc
+    - role: setup_shell
     - role: install_kubectl
     - role: install_krew
     - role: install_krew_plugins
@@ -36,9 +36,9 @@
     - role: install_kustomize
 
   post_tasks:
-    - name: Notify about .bashrc reload
+    - name: Notify about shell config reload
       debug:
-        msg: ".bashrc will be reloaded on the next session."
+        msg: "Shell configuration will be applied on the next session."
       changed_when: false
 
     - name: Set ownership for .krew directory

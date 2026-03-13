@@ -2,8 +2,8 @@
 galaxy_info:
   author: somaz
   description: Ansible role to install krew
-  license: MIT
-  min_ansible_version: 2.9
+  license: Apache-2.0
+  min_ansible_version: "2.9"
   role_name: install_krew
   platforms:
     - name: Debian
@@ -12,14 +12,13 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - all
-    - name: RHEL
+    - name: EL
       versions:
         - all
-    - name: CentOS
+    - name: Fedora
       versions:
         - all
   galaxy_tags:
     - krew
 
 dependencies: []
-

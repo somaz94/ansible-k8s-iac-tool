@@ -1,0 +1,42 @@
+---
+- name: Install zsh if not present
+  package:
+    name: zsh
+    state: present
+  become: true
+
+- name: Ensure .zshrc exists
+  file:
+    path: "{{ user_home.stdout }}/.zshrc"
+    state: touch
+    owner: "{{ home_user }}"
+    mode: '0644'
+  become: false
+  changed_when: false
+
+- name: Append configurations to .zshrc for specific user
+  blockinfile:
+    path: "{{ user_home.stdout }}/.zshrc"
+    block: |
+      # kubectl configurations
+      [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+      alias k=kubectl
+      [[ $commands[kubectl] ]] && compdef k=kubectl
+
+      # kubectl krew configurations
+      if [ -d "${KREW_ROOT:-$HOME/.krew}/bin" ]; then
+        export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+      fi
+
+      # terraform/packer completions
+      autoload -U +X bashcompinit && bashcompinit
+      [[ -f /usr/bin/terraform ]] && complete -C /usr/bin/terraform terraform
+      [[ -f /usr/bin/packer ]] && complete -C /usr/bin/packer packer
+
+      # pulumi configurations
+      if [ -d "$HOME/.pulumi/bin" ]; then
+        export PATH="$PATH:$HOME/.pulumi/bin"
+      fi
+  become: false
+  notify:
+    - reload shell

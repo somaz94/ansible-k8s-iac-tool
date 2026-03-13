@@ -7,6 +7,8 @@
 
 - name: Download and install Helm Debian/Ubuntu
   shell: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
+  args:
+    executable: /bin/bash
   when:
     - ansible_os_family == 'Debian'
     - helm_check.rc != 0
@@ -14,6 +16,8 @@
 
 - name: Download and install Helm RHEL/CentOS
   shell: "export PATH=$PATH:/usr/local/bin && curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
+  args:
+    executable: /bin/bash
   when:
     - ansible_os_family == 'RedHat'
     - helm_check.rc != 0

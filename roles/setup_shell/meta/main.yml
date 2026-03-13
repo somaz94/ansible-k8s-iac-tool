@@ -1,10 +1,10 @@
 ---
 galaxy_info:
   author: somaz
-  description: Ansible role to install helm
+  description: Ansible role to configure shell completions and PATH for K8s/IaC tools (bash, zsh, fish)
   license: Apache-2.0
   min_ansible_version: "2.9"
-  role_name: install_helm
+  role_name: setup_shell
   platforms:
     - name: Debian
       versions:
@@ -19,6 +19,10 @@ galaxy_info:
       versions:
         - all
   galaxy_tags:
-    - helm
+    - shell
+    - bash
+    - zsh
+    - fish
+    - kubernetes
 
 dependencies: []

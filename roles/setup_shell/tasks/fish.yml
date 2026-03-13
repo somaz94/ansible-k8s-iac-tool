@@ -1,0 +1,41 @@
+---
+- name: Install fish if not present
+  package:
+    name: fish
+    state: present
+  become: true
+
+- name: Ensure fish config directory exists
+  file:
+    path: "{{ user_home.stdout }}/.config/fish/conf.d"
+    state: directory
+    owner: "{{ home_user }}"
+    mode: '0755'
+    recurse: true
+  become: false
+
+- name: Configure fish shell for specific user
+  blockinfile:
+    path: "{{ user_home.stdout }}/.config/fish/conf.d/k8s-iac-tools.fish"
+    create: true
+    block: |
+      # kubectl configurations
+      if type -q kubectl
+        kubectl completion fish | source
+        abbr -a k kubectl
+      end
+
+      # kubectl krew configurations
+      if test -d $HOME/.krew/bin
+        set -gx PATH $HOME/.krew/bin $PATH
+      end
+
+      # pulumi configurations
+      if test -d $HOME/.pulumi/bin
+        set -gx PATH $PATH $HOME/.pulumi/bin
+      end
+    owner: "{{ home_user }}"
+    mode: '0644'
+  become: false
+  notify:
+    - reload shell

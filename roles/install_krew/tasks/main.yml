@@ -1,6 +1,8 @@
 ---
 - name: Check if krew is installed
   shell: kubectl krew version
+  args:
+    executable: /bin/bash
   register: krew_check
   failed_when: false
   changed_when: false
@@ -14,6 +16,8 @@
 
 - name: Get home directory of specific user
   shell: "eval echo ~{{ home_user }}"
+  args:
+    executable: /bin/bash
   register: user_home
   changed_when: false
   when: krew_check.rc != 0
@@ -25,7 +29,8 @@
         (
           set -e;
           if ! kubectl krew version; then
-            cd "$(mktemp -d)" &&
+            KREW_TMPDIR="{{ user_home.stdout }}/.krew_tmp"
+            mkdir -p "$KREW_TMPDIR" && cd "$KREW_TMPDIR" &&
             OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
             ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
             KREW="krew-${OS}_${ARCH}" &&
@@ -33,6 +38,7 @@
             tar zxvf "${KREW}.tar.gz" &&
             chmod +x ./"${KREW}" &&
             ./"${KREW}" install krew
+            rm -rf "$KREW_TMPDIR"
           fi
         )
       args:

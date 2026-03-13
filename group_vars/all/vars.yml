@@ -1,4 +1,6 @@
 home_user: "somaz"
+user_shells:
+  - bash
 krew_version: "v0.4.4"
 krew_plugins:
   - "ctx"

@@ -1,0 +1,19 @@
+---
+- name: Get home directory of specific user
+  shell: "eval echo ~{{ home_user }}"
+  args:
+    executable: /bin/bash
+  register: user_home
+  changed_when: false
+
+- name: Configure bash shell
+  include_tasks: bash.yml
+  when: "'bash' in user_shells"
+
+- name: Configure zsh shell
+  include_tasks: zsh.yml
+  when: "'zsh' in user_shells"
+
+- name: Configure fish shell
+  include_tasks: fish.yml
+  when: "'fish' in user_shells"
