@@ -26,7 +26,6 @@ jobs:
           - debian11
           - debian12
           - rockylinux9
-          - fedora40
 
     steps:
       - name: Checkout

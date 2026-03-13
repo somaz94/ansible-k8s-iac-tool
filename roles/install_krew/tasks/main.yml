@@ -3,6 +3,8 @@
   shell: kubectl krew version
   args:
     executable: /bin/bash
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
   register: krew_check
   failed_when: false
   changed_when: false
@@ -45,7 +47,7 @@
         executable: /bin/bash
       environment:
         KREW_ROOT: "{{ user_home.stdout }}/.krew"
-        PATH: "{{ ansible_env.PATH }}:{{ user_home.stdout }}/.krew/bin"
+        PATH: "/usr/local/bin:{{ ansible_env.PATH }}:{{ user_home.stdout }}/.krew/bin"
       become: false
       register: krew_install_result
       changed_when: "'Added krew' in krew_install_result.stdout"

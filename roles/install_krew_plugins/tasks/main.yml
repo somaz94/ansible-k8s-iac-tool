@@ -17,7 +17,7 @@
   when: krew_plugins is defined
   environment:
     KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
-    PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
+    PATH: "/usr/local/bin:{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
 
 - name: Install krew plugins for Debian/Ubuntu
   shell: "kubectl krew install {{ item }}"
@@ -30,7 +30,7 @@
     executable: /bin/bash
   environment:
     KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
-    PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
+    PATH: "/usr/local/bin:{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
   become: false
   register: plugin_install_result
   changed_when: "'Added plugin' in plugin_install_result.stdout"
