@@ -48,7 +48,7 @@
   shell: "curl -fsSL https://get.pulumi.com | sh"
   args:
     chdir: "{{ user_home }}" 
-  become: yes
+  become: true
   become_user: "{{ home_user }}"
   when: not pulumi_installed
   changed_when: true 

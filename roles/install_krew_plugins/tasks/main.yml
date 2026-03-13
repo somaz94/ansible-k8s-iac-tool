@@ -27,7 +27,7 @@
   environment:
     KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
     PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:{{ ansible_env.PATH }}"
-  become: no
+  become: false
   register: plugin_install_result
   changed_when: "'Added plugin' in plugin_install_result.stdout"
 
@@ -43,7 +43,7 @@
   environment:
     KREW_ROOT: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew"
     PATH: "{{ user_home.stdout if user_home is defined else ansible_env.HOME }}/.krew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
-  become: no
+  become: false
   register: plugin_install_result
   changed_when: "'Added plugin' in plugin_install_result.stdout"
 

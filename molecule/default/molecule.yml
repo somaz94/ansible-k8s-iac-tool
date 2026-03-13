@@ -4,15 +4,8 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: ubuntu-instance
+  - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2004}-ansible:latest"
-    command: "tail -f /dev/null"
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
-  - name: centos-instance
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos8}-ansible:latest"
     command: "tail -f /dev/null"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -20,5 +13,7 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: ../../roles
 verifier:
   name: ansible

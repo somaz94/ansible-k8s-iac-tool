@@ -11,29 +11,29 @@
       user:
         name: "{{ home_user }}"
         shell: /bin/bash
-        createhome: yes
+        createhome: true
 
     - name: Update apt cache.
       apt: 
-        update_cache: yes
+        update_cache: true
       when: ansible_os_family == 'Debian'
 
     - name: Update yum cache.
       yum:
-        update_cache: yes
+        update_cache: true
       when: ansible_os_family == 'RedHat'
 
   roles:
-    - role: roles/setup_bashrc 
-    - role: roles/install_kubectl
-    - role: roles/install_krew
-    - role: roles/install_krew_plugins
-    - role: roles/install_terraform
-    - role: roles/install_packer
-    - role: roles/install_vagrant
-    - role: roles/install_helm
-    - role: roles/install_pulumi
-    - role: roles/install_kustomize
+    - role: setup_bashrc
+    - role: install_kubectl
+    - role: install_krew
+    - role: install_krew_plugins
+    - role: install_terraform
+    - role: install_packer
+    - role: install_vagrant
+    - role: install_helm
+    - role: install_pulumi
+    - role: install_kustomize
 
   post_tasks:
     - name: Notify about .bashrc reload
@@ -46,5 +46,5 @@
         path: "~{{ home_user }}/.krew"
         owner: "{{ home_user }}"
         group: "{{ home_user }}"
-        recurse: yes
+        recurse: true
         state: directory

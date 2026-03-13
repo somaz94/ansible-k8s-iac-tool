@@ -9,7 +9,7 @@
   yum:
     name: git
     state: present
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat'
 
 - name: Get home directory of specific user
@@ -39,7 +39,7 @@
       environment:
         KREW_ROOT: "{{ user_home.stdout }}/.krew"
         PATH: "{{ ansible_env.PATH }}:{{ user_home.stdout }}/.krew/bin"
-      become: no
+      become: false
       register: krew_install_result
       changed_when: "'Added krew' in krew_install_result.stdout"
   when: krew_check.rc != 0

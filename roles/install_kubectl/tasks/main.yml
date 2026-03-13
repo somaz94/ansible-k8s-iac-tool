@@ -16,7 +16,8 @@
   changed_when: false
   when: kubectl_installed
 
-- set_fact:
+- name: Set installed kubectl version fact
+  set_fact:
     installed_kubectl_version: "{{ installed_kubectl_version.stdout.split('\n')[0].split(': ')[1] }}"
   when: kubectl_installed
 
@@ -24,7 +25,7 @@
   shell: |
     apt-get update && sudo apt-get install -y gnupg software-properties-common wget curl git
   when: ansible_os_family == 'Debian'
-  become: yes
+  become: true
 
 - name: Retrieve the latest kubectl version
   command:
@@ -45,7 +46,7 @@
     - name: Install kubectl
       command:
         cmd: "sudo install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl"
-      become: yes
+      become: true
       when: not kubectl_installed or (installed_kubectl_version.stdout is defined and installed_kubectl_version.stdout != latest_kubectl_version.stdout)
 
     - name: Clean up the downloaded binary

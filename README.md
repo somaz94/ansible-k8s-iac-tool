@@ -1,57 +1,79 @@
-# ansible k8s iac tool
+# Ansible K8s IaC Tool
 
-This Ansible collection is dedicated to setting up Kubernetes tooling. The collection comprises several roles, each focusing on a specific tool or configuration:
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-somaz94.ansible__k8s__iac__tool-blue.svg)](https://galaxy.ansible.com/ui/repo/published/somaz94/ansible_k8s_iac_tool/)
+[![Molecule Test](https://github.com/somaz94/ansible-k8s-iac-tool/actions/workflows/molecule-test.yml/badge.svg)](https://github.com/somaz94/ansible-k8s-iac-tool/actions/workflows/molecule-test.yml)
+[![GitHub tag](https://img.shields.io/github/v/tag/somaz94/ansible-k8s-iac-tool)](https://github.com/somaz94/ansible-k8s-iac-tool/tags)
+[![License](https://img.shields.io/github/license/somaz94/ansible-k8s-iac-tool)](LICENSE)
 
-- `install_kubectl`: Sets up kubectl.
-- `install_krew`: Sets up krew.
-- `install_krew_plugins`: Installs specified krew plugins.
-- `install_terraform`: Sets up terraform.
-- `install_helm`: Sets up helm.
-- `install_packer`: Sets up packer.
-- `install_kustomize`: Sets up kustomize.
-- `install_pulumi`: Sets up pulumi.
-- `install_vagrant`: Sets up vagrant.
-- `setup_bashrc`: Adds specific configurations to the bashrc.
+An Ansible collection for automating the installation and configuration of Kubernetes and IaC (Infrastructure as Code) tools.
+
+<br/>
+
+## Included Roles
+
+| Role | Description |
+|------|-------------|
+| `install_kubectl` | Install and configure kubectl |
+| `install_krew` | Install krew (kubectl plugin manager) |
+| `install_krew_plugins` | Install specified krew plugins |
+| `install_helm` | Install Helm package manager |
+| `install_terraform` | Install HashiCorp Terraform |
+| `install_packer` | Install HashiCorp Packer |
+| `install_vagrant` | Install HashiCorp Vagrant |
+| `install_kustomize` | Install Kustomize |
+| `install_pulumi` | Install Pulumi |
+| `setup_bashrc` | Configure shell completions and PATH |
 
 <br/>
 
 ## Requirements
 
-- Ansible 2.9 or higher
-- Targeted OS: Deiban/Ubuntu, RHEL/CentOS (For now)
+- Ansible 2.9+
+- Supported OS: Debian/Ubuntu, RHEL/CentOS
 
 <br/>
 
-## Example Playbook
+## Installation
 
-### Running Locally
-
-#### 1. Setting Up the Variable File
-
-Define the necessary variables in the `vars.yml` file:
 ```bash
-# vars.yml
+ansible-galaxy collection install somaz94.ansible_k8s_iac_tool
+```
+
+<br/>
+
+## Usage
+
+### Variables
+
+Define variables in `vars.yml`:
+
+```yaml
 home_user: "somaz"
 krew_version: "v0.4.4"
 krew_plugins:
-  - "ctx"
-  - "neat"
-  - "ns"
-  # more... 
+  - ctx
+  - neat
+  - ns
+  # See: https://krew.sigs.k8s.io/plugins/
 ```
 
-- For a comprehensive list of available krew plugins, visit the official [krew plugins directory](https://krew.sigs.k8s.io/plugins/).
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `home_user` | Target user for tooling setup | - |
+| `krew_version` | Krew version to install | `v0.4.4` |
+| `krew_plugins` | List of krew plugins to install | `[]` |
 
-#### 2. Creating the Playbook
+<br/>
 
-Write the playbook in the `site.yml` file:
-```bash
+### Running Locally
+
+```yaml
 # site.yml
 ---
 - hosts: localhost
-  become: yes
+  become: true
   vars_files:
-    - ~/vars.yml
+    - vars.yml
   collections:
     - somaz94.ansible_k8s_iac_tool
   roles:
@@ -67,9 +89,6 @@ Write the playbook in the `site.yml` file:
     - install_pulumi
 ```
 
-#### 3. Running the Playbook
-
-Execute the playbook with the following command:
 ```bash
 ansible-playbook site.yml
 ```
@@ -78,39 +97,19 @@ ansible-playbook site.yml
 
 ### Running Remotely
 
-#### 1. Setting Up the Variable File
-
-Define the necessary variables in the `vars.yml` file:
-```bash
-# vars.yml
-home_user: "somaz"
-krew_version: "v0.4.4"
-krew_plugins:
-  - "ctx"
-  - "neat"
-  - "ns"
-  # more... 
-```
-
-#### 2. Setting Up the Inventory File
-
-Define the remote server information and connection details in the `inventory.ini` file:
-```bash
+```ini
 # inventory.ini
-[test_servers]
-test-server ansible_ssh_user=somaz ansible_ssh_private_key_file=/home/somaz/.ssh/id_rsa_somaz94
+[servers]
+my-server ansible_ssh_user=somaz ansible_ssh_private_key_file=~/.ssh/id_rsa
 ```
 
-#### 3. Creating the Playbook
-
-Write the playbook in the `site.yml` file:
-```bash
+```yaml
 # site.yml
 ---
-- hosts: <hosts> # Remote Server
-  become: yes
+- hosts: servers
+  become: true
   vars_files:
-    - ~/vars.yml
+    - vars.yml
   collections:
     - somaz94.ansible_k8s_iac_tool
   roles:
@@ -126,43 +125,46 @@ Write the playbook in the `site.yml` file:
     - install_pulumi
 ```
 
-#### 4. Running the Playbook
-
-Execute the playbook with the following command:
 ```bash
 ansible-playbook -i inventory.ini site.yml
 ```
 
 <br/>
 
-### Post-Task Actions
+### Post-Task
 
-After the tasks have been completed, apply the changes on the installed machine by running:
+After the playbook completes, reload the shell configuration:
+
 ```bash
 source ~/.bashrc
 ```
-- This command will apply any changes made in the .bashrc file to the current shell session.
-
 
 <br/>
 
-## Role Variables
+## Development
 
-The variables below can be modified in the `~/vars.yml` file as per your requirements:
+### Prerequisites
 
-- `home_user`: User for which the tooling setup should be applied. 
-- `krew_version`: Desired version of krew. Default: `v0.4.4`
-- `krew_plugins`: List of krew plugins to be installed.
+- Python 3.x
+- Docker (for Molecule testing)
 
-<br/>
+### Quick Start
 
-## Dependencies
-
-None.
+```bash
+make venv                          # Create venv and install dependencies
+make test                          # Full molecule test (default: ubuntu2004)
+make test DISTRO=centos8           # Test with CentOS
+make converge                      # Apply roles only
+make verify                        # Run verification only
+make destroy                       # Destroy test instances
+make lint                          # Run ansible-lint
+make build                         # Build Galaxy collection
+make publish GALAXY_API_KEY=xxx    # Publish to Ansible Galaxy
+make clean                         # Remove venv and build artifacts
+```
 
 <br/>
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

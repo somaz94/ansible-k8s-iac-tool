@@ -17,7 +17,7 @@
   yum:
     name: yum-utils 
     state: present
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat' and packer_check_rhel.rc != 0
 
 - name: Install Packer for Debian/Ubuntu
@@ -59,14 +59,14 @@
   file:
     path: /sbin/packer
     state: absent
-  become: yes
+  become: true
   when: 
     - ansible_os_family == 'RedHat'
     - packer_location.stdout == "/sbin/packer"
 
 - name: Create symbolic link for packer in /sbin/
   command: ln -s /usr/bin/packer /sbin/packer
-  become: yes
+  become: true
   when: 
     - ansible_os_family == 'RedHat'
     - packer_location.stdout == "/sbin/packer"
