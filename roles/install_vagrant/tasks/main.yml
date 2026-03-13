@@ -24,7 +24,7 @@
     - name: Update apt and install Vagrant for (Debian/Ubuntu)
       apt:
         name: vagrant
-        update_cache: yes
+        update_cache: true
   when: ansible_os_family == 'Debian' and vagrant_check.rc != 0
 
 - name: Install Vagrant for RHEL/CentOS
