@@ -1,0 +1,27 @@
+# Ansible Galaxy build artifacts
+*.tar.gz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Molecule
+.cache/
+.molecule/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
