@@ -1,7 +1,7 @@
 .PHONY: help venv test create converge verify destroy lint build publish clean
 
 VENV := .venv
-DISTRO ?= ubuntu2004
+DISTRO ?= ubuntu2204
 
 $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)

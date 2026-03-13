@@ -29,7 +29,7 @@ An Ansible collection for automating the installation and configuration of Kuber
 ## Requirements
 
 - Ansible 2.9+
-- Supported OS: Debian/Ubuntu, RHEL/CentOS
+- Supported OS: Ubuntu 22.04+, Debian 11+, Rocky Linux 9+, Fedora 40+
 
 <br/>
 
@@ -152,8 +152,11 @@ source ~/.bashrc
 
 ```bash
 make venv                          # Create venv and install dependencies
-make test                          # Full molecule test (default: ubuntu2004)
-make test DISTRO=centos8           # Test with CentOS
+make test                          # Full molecule test (default: ubuntu2204)
+make test DISTRO=ubuntu2404        # Test with Ubuntu 24.04
+make test DISTRO=debian12          # Test with Debian 12
+make test DISTRO=rockylinux9       # Test with Rocky Linux 9
+make test DISTRO=fedora40          # Test with Fedora 40
 make converge                      # Apply roles only
 make verify                        # Run verification only
 make destroy                       # Destroy test instances
