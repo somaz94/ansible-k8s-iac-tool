@@ -4,14 +4,27 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "*.md"
-      - .github/workflows/gitlab-mirror.yml
+    paths:
+      - "roles/**"
+      - "molecule/**"
+      - "group_vars/**"
+      - "templates/**"
+      - "meta/**"
+      - "galaxy.yml"
+      - "requirements.txt"
+      - ".github/workflows/molecule-test.yml"
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - "*.md"
+    paths:
+      - "roles/**"
+      - "molecule/**"
+      - "group_vars/**"
+      - "templates/**"
+      - "meta/**"
+      - "galaxy.yml"
+      - "requirements.txt"
+      - ".github/workflows/molecule-test.yml"
   workflow_dispatch:
 
 jobs:
