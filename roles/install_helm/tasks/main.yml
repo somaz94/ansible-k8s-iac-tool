@@ -1,9 +1,8 @@
 ---
 - name: Check if Helm is installed
-  command: which helm
-  register: helm_check
-  failed_when: false
-  changed_when: false
+  stat:
+    path: /usr/local/bin/helm
+  register: helm_stat
 
 - name: Download and install Helm Debian/Ubuntu
   shell: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
@@ -11,7 +10,7 @@
     executable: /bin/bash
   when:
     - ansible_os_family == 'Debian'
-    - helm_check.rc != 0
+    - not helm_stat.stat.exists
   changed_when: true
 
 - name: Download and install Helm RHEL/CentOS
@@ -20,5 +19,5 @@
     executable: /bin/bash
   when:
     - ansible_os_family == 'RedHat'
-    - helm_check.rc != 0
+    - not helm_stat.stat.exists
   changed_when: true

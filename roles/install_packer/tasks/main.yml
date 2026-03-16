@@ -59,20 +59,27 @@
       become: true
   when: ansible_os_family == 'RedHat' and packer_check_rhel.rc != 0
 
-- name: Check location of packer
-  command: which packer
-  register: packer_location
-  changed_when: false
+- name: Check if /sbin/packer exists
+  stat:
+    path: /sbin/packer
+  register: sbin_packer
   when: ansible_os_family == 'RedHat'
 
-- name: Remove packer from /sbin
+- name: Check if /sbin/packer is a symlink to /usr/bin/packer
+  set_fact:
+    sbin_packer_needs_fix: "{{ sbin_packer.stat.exists and not sbin_packer.stat.islnk }}"
+  when:
+    - ansible_os_family == 'RedHat'
+    - sbin_packer.stat is defined
+
+- name: Remove non-symlink packer from /sbin
   file:
     path: /sbin/packer
     state: absent
   become: true
   when:
     - ansible_os_family == 'RedHat'
-    - packer_location.stdout == "/sbin/packer"
+    - sbin_packer_needs_fix | default(false)
 
 - name: Create symbolic link for packer in /sbin/
   file:
@@ -82,4 +89,4 @@
   become: true
   when:
     - ansible_os_family == 'RedHat'
-    - packer_location.stdout == "/sbin/packer"
+    - sbin_packer_needs_fix | default(false)

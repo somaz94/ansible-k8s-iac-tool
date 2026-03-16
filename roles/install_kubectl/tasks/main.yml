@@ -1,13 +1,12 @@
 ---
 - name: Check if kubectl is installed
-  command: kubectl version --client
-  register: kubectl_check
-  failed_when: false
-  changed_when: false
+  stat:
+    path: /usr/local/bin/kubectl
+  register: kubectl_stat
 
-- name: Set kubectl_installed fact based on kubectl_check
+- name: Set kubectl_installed fact
   set_fact:
-    kubectl_installed: "{{ kubectl_check.rc == 0 }}"
+    kubectl_installed: "{{ kubectl_stat.stat.exists }}"
 
 - name: Add required tools (Debian/Ubuntu)
   apt:
