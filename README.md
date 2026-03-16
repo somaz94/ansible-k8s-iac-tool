@@ -45,6 +45,8 @@ ansible-galaxy collection install somaz94.ansible_k8s_iac_tool
 
 ## Usage
 
+<br/>
+
 ### Variables
 
 Define variables in `vars.yml`:
@@ -157,10 +159,14 @@ source ~/.config/fish/conf.d/k8s-iac-tools.fish
 
 ## Development
 
+<br/>
+
 ### Prerequisites
 
 - Python 3.x
 - Docker (for Molecule testing)
+
+<br/>
 
 ### Quick Start
 
