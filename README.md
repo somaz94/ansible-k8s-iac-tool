@@ -2,6 +2,7 @@
 
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-somaz94.ansible__k8s__iac__tool-blue.svg)](https://galaxy.ansible.com/ui/repo/published/somaz94/ansible_k8s_iac_tool/)
 [![Molecule Test](https://github.com/somaz94/ansible-k8s-iac-tool/actions/workflows/molecule-test.yml/badge.svg)](https://github.com/somaz94/ansible-k8s-iac-tool/actions/workflows/molecule-test.yml)
+[![Release](https://github.com/somaz94/ansible-k8s-iac-tool/actions/workflows/release.yml/badge.svg)](https://github.com/somaz94/ansible-k8s-iac-tool/actions/workflows/release.yml)
 [![GitHub tag](https://img.shields.io/github/v/tag/somaz94/ansible-k8s-iac-tool)](https://github.com/somaz94/ansible-k8s-iac-tool/tags)
 [![License](https://img.shields.io/github/license/somaz94/ansible-k8s-iac-tool)](LICENSE)
 

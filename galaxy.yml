@@ -1,6 +1,6 @@
 namespace: somaz94
 name: ansible_k8s_iac_tool
-version: 1.1.6
+version: 1.2.0
 readme: README.md
 authors:
   - somaz genius5711@gmail.com
@@ -17,5 +17,9 @@ tags:
   - pulumi
   - terraform
   - vagrant
+  - shell
+  - bash
+  - zsh
+  - fish
 dependencies: {}
 repository: https://github.com/somaz94/ansible-k8s-iac-tool
