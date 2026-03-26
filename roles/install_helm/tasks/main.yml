@@ -6,21 +6,29 @@
 
 - name: Install Helm
   block:
+    - name: Create temporary install directory
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: helm_install_
+        path: "{{ ansible_env.HOME }}"
+      register: helm_tmpdir
+
     - name: Download Helm install script
       ansible.builtin.get_url:
         url: "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
-        dest: "/tmp/get-helm-3.sh"
+        dest: "{{ helm_tmpdir.path }}/get-helm-3.sh"
         mode: '0755'
 
     - name: Run Helm install script
-      ansible.builtin.shell: "bash /tmp/get-helm-3.sh"
+      ansible.builtin.shell: "bash {{ helm_tmpdir.path }}/get-helm-3.sh"
       args:
         executable: /bin/bash
       environment:
+        HELM_INSTALL_DIR: "/usr/local/bin"
         PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
 
-    - name: Clean up install script
+    - name: Clean up temporary install directory
       ansible.builtin.file:
-        path: "/tmp/get-helm-3.sh"
+        path: "{{ helm_tmpdir.path }}"
         state: absent
   when: not helm_stat.stat.exists

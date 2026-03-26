@@ -6,24 +6,31 @@
 
 - name: Install Kustomize
   block:
+    - name: Create temporary install directory
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: kustomize_install_
+        path: "{{ ansible_env.HOME }}"
+      register: kustomize_tmpdir
+
     - name: Download Kustomize install script
       ansible.builtin.get_url:
         url: "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
-        dest: "/tmp/install_kustomize.sh"
+        dest: "{{ kustomize_tmpdir.path }}/install_kustomize.sh"
         mode: '0755'
 
     - name: Run Kustomize install script
-      ansible.builtin.shell: "bash /tmp/install_kustomize.sh"
+      ansible.builtin.shell: "bash {{ kustomize_tmpdir.path }}/install_kustomize.sh"
       args:
         executable: /bin/bash
-        chdir: /tmp
+        chdir: "{{ kustomize_tmpdir.path }}"
 
     - name: Move kustomize to /usr/local/bin
-      ansible.builtin.command: mv /tmp/kustomize /usr/local/bin/
+      ansible.builtin.command: "mv {{ kustomize_tmpdir.path }}/kustomize /usr/local/bin/"
       become: true
 
-    - name: Clean up install script
+    - name: Clean up temporary install directory
       ansible.builtin.file:
-        path: "/tmp/install_kustomize.sh"
+        path: "{{ kustomize_tmpdir.path }}"
         state: absent
   when: not kustomize_stat.stat.exists
