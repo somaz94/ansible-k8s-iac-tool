@@ -36,7 +36,7 @@
           echo "krew already installed"
           exit 0
         fi
-        INSTALL_DIR="$(mktemp -d)"
+        INSTALL_DIR="$(mktemp -d "${HOME}/krew-install.XXXXXX")"
         trap 'rm -rf "${INSTALL_DIR}"' EXIT
         cd "${INSTALL_DIR}"
         OS="$(uname | tr '[:upper:]' '[:lower:]')"
