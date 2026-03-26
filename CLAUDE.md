@@ -2,10 +2,6 @@
 
 Ansible collection that automates installation of Kubernetes and IaC tools for Linux systems.
 
-- Do not include `Co-Authored-By` lines in commit messages.
-- Do not push to remote. Only commit. The user will push manually.
-- Do not modify git config.
-
 ## Project Structure
 
 - **Language**: YAML (Ansible playbooks/roles)
@@ -36,6 +32,3 @@ make publish                 # Publish to Ansible Galaxy
 ansible-galaxy collection install somaz94.ansible_k8s_iac_tool
 ansible-playbook site.yml
 ```
-
-- Communicate with the user in Korean.
-- All documentation and code comments must be written in English.
