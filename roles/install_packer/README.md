@@ -5,7 +5,7 @@ This role installs and sets up `install_packer` for Kubernetes tooling.
 ## Requirements
 
 - Ansible 2.9 or higher
-- Targeted OS: Deiban/Ubuntu, RHEL/CentOS (For now)
+- Targeted OS: Debian/Ubuntu, RHEL/CentOS (For now)
 
 ## Role Variables
 
@@ -35,7 +35,7 @@ To use this role, include it in your playbook as follows:
     - somaz94.ansible_k8s_iac_tool
   roles:
     - install_packer
-    - setup_bashrc
+    - setup_shell
 ```
 
 ### Remote
@@ -50,5 +50,5 @@ To use this role, include it in your playbook as follows:
     - somaz94.ansible_k8s_iac_tool
   roles:
     - install_packer
-    - setup_bashrc
+    - setup_shell
 ```

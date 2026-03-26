@@ -1,23 +1,26 @@
 ---
 - name: Check if Helm is installed
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/helm
   register: helm_stat
 
-- name: Download and install Helm Debian/Ubuntu
-  shell: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
-  args:
-    executable: /bin/bash
-  when:
-    - ansible_os_family == 'Debian'
-    - not helm_stat.stat.exists
-  changed_when: true
+- name: Install Helm
+  block:
+    - name: Download Helm install script
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
+        dest: "/tmp/get-helm-3.sh"
+        mode: '0755'
 
-- name: Download and install Helm RHEL/CentOS
-  shell: "export PATH=$PATH:/usr/local/bin && curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
-  args:
-    executable: /bin/bash
-  when:
-    - ansible_os_family == 'RedHat'
-    - not helm_stat.stat.exists
-  changed_when: true
+    - name: Run Helm install script
+      ansible.builtin.shell: "bash /tmp/get-helm-3.sh"
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+
+    - name: Clean up install script
+      ansible.builtin.file:
+        path: "/tmp/get-helm-3.sh"
+        state: absent
+  when: not helm_stat.stat.exists

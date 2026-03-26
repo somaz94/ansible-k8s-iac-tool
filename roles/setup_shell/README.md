@@ -1,11 +1,11 @@
-# Role: install_setup_bashrc
+# Role: setup_shell
 
-This role installs and sets up `install_setup_bashrc` for Kubernetes tooling.
+This role configures shell completions and PATH for Kubernetes tooling.
 
 ## Requirements
 
 - Ansible 2.9 or higher
-- Targeted OS: Deiban/Ubuntu, RHEL/CentOS (For now)
+- Targeted OS: Debian/Ubuntu, RHEL/CentOS (For now)
 
 ## Role Variables
 
@@ -34,7 +34,7 @@ To use this role, include it in your playbook as follows:
   collections:
     - somaz94.ansible_k8s_iac_tool
   roles:
-    - setup_bashrc
+    - setup_shell
 ```
 
 ### Remote
@@ -48,5 +48,5 @@ To use this role, include it in your playbook as follows:
   collections:
     - somaz94.ansible_k8s_iac_tool
   roles:
-    - setup_bashrc
+    - setup_shell
 ```

@@ -7,7 +7,7 @@
 
 - name: Ensure fish config directory exists
   file:
-    path: "{{ user_home.stdout }}/.config/fish/conf.d"
+    path: "{{ user_home }}/.config/fish/conf.d"
     state: directory
     owner: "{{ home_user }}"
     mode: '0755'
@@ -16,7 +16,7 @@
 
 - name: Configure fish shell for specific user
   blockinfile:
-    path: "{{ user_home.stdout }}/.config/fish/conf.d/k8s-iac-tools.fish"
+    path: "{{ user_home }}/.config/fish/conf.d/k8s-iac-tools.fish"
     create: true
     block: |
       # kubectl configurations

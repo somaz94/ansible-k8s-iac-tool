@@ -5,7 +5,7 @@ This role installs and sets up `install_kustomize` for Kubernetes tooling.
 ## Requirements
 
 - Ansible 2.9 or higher
-- Targeted OS: Deiban/Ubuntu, RHEL/CentOS (For now)
+- Targeted OS: Debian/Ubuntu, RHEL/CentOS (For now)
 
 ## Role Variables
 

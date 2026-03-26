@@ -57,7 +57,6 @@ user_shells:
   - bash          # default
   # - zsh         # optional: configure .zshrc
   # - fish        # optional: configure fish config
-krew_version: "v0.4.4"
 krew_plugins:
   - ctx
   - neat
@@ -69,7 +68,6 @@ krew_plugins:
 |----------|-------------|---------|
 | `home_user` | Target user for tooling setup | - |
 | `user_shells` | List of shells to configure (`bash`, `zsh`, `fish`) | `[bash]` |
-| `krew_version` | Krew version to install | `v0.4.4` |
 | `krew_plugins` | List of krew plugins to install | `[]` |
 
 <br/>
@@ -109,7 +107,7 @@ ansible-playbook site.yml
 ```ini
 # inventory.ini
 [servers]
-my-server ansible_ssh_user=somaz ansible_ssh_private_key_file=~/.ssh/id_rsa
+my-server ansible_ssh_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_rsa
 ```
 
 ```yaml

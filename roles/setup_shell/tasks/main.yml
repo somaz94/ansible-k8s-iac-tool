@@ -1,10 +1,12 @@
 ---
 - name: Get home directory of specific user
-  shell: "eval echo ~{{ home_user }}"
-  args:
-    executable: /bin/bash
-  register: user_home
-  changed_when: false
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ home_user }}"
+
+- name: Set user home directory fact
+  ansible.builtin.set_fact:
+    user_home: "{{ ansible_facts.getent_passwd[home_user][4] }}"
 
 - name: Configure bash shell
   include_tasks: bash.yml

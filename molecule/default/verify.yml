@@ -3,73 +3,84 @@
   hosts: all
   tasks:
     - name: Include group_vars
-      include_vars: ../../group_vars/all/vars.yml
+      ansible.builtin.include_vars: ../../group_vars/all/vars.yml
+
+    - name: Get user home directory
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ home_user }}"
+
+    - name: Set user home directory fact
+      ansible.builtin.set_fact:
+        user_home_dir: "{{ ansible_facts.getent_passwd[home_user][4] }}"
 
     - name: Check if kubectl is installed
-      command: kubectl version --client
+      ansible.builtin.command: kubectl version --client
       register: kubectl_result
       failed_when: kubectl_result.rc != 0
       changed_when: false
 
     - name: Check if krew is installed
-      command: "/home/{{ home_user }}/.krew/bin/kubectl-krew version"
+      ansible.builtin.command: "{{ user_home_dir }}/.krew/bin/kubectl-krew version"
       register: krew_result
       failed_when: krew_result.rc != 0
       changed_when: false
 
+    - name: Check if krew plugins are installed
+      ansible.builtin.shell: "{{ user_home_dir }}/.krew/bin/kubectl-krew list | grep -w '{{ item }}'"
+      loop: "{{ krew_plugins }}"
+      register: plugin_check
+      failed_when: plugin_check.rc != 0
+      changed_when: false
+      environment:
+        KREW_ROOT: "{{ user_home_dir }}/.krew"
+
     - name: Check if helm is installed
-      command: which helm
+      ansible.builtin.command: which helm
       register: helm_result
       failed_when: helm_result.rc != 0
       changed_when: false
 
     - name: Check if terraform is installed
-      command: which terraform
+      ansible.builtin.command: which terraform
       register: terraform_result
       failed_when: terraform_result.rc != 0
       changed_when: false
 
     - name: Check if Packer is installed Debian/Ubuntu
-      command: packer version
+      ansible.builtin.command: packer version
       register: packer_check_debian
       failed_when: false
       changed_when: false
       when: ansible_os_family == 'Debian'
 
     - name: Check if Packer is installed RHEL/CentOS
-      command: which packer
+      ansible.builtin.command: which packer
       register: packer_check_rhel
       failed_when: false
       changed_when: false
       when: ansible_os_family == 'RedHat'
 
     - name: Check if vagrant is installed
-      command: which vagrant
+      ansible.builtin.command: which vagrant
       register: vagrant_result
       failed_when: vagrant_result.rc != 0
       changed_when: false
 
     - name: Check if Pulumi binary exists in user's home directory
-      stat:
-        path: "/home/{{ home_user }}/.pulumi/bin/pulumi" 
+      ansible.builtin.stat:
+        path: "{{ user_home_dir }}/.pulumi/bin/pulumi"
       register: pulumi_binary
 
-    - name: Debug Pulumi binary existence
-      debug:
-        var: pulumi_binary.stat.exists
-
     - name: Check if Pulumi is installed if binary exists
-      command: "/home/{{ home_user }}/.pulumi/bin/pulumi version"
+      ansible.builtin.command: "{{ user_home_dir }}/.pulumi/bin/pulumi version"
       register: pulumi_check
       failed_when: false
       changed_when: false
-      ignore_errors: true
       when: pulumi_binary.stat.exists
 
     - name: Check if kustomize is installed
-      command: kustomize version
+      ansible.builtin.command: kustomize version
       register: kustomize_result
       failed_when: kustomize_result.rc != 0
       changed_when: false
-
-    # ... and so on for other tools you've installed.

@@ -1,15 +1,15 @@
 ---
 - name: Check if kubectl is installed
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/kubectl
   register: kubectl_stat
 
 - name: Set kubectl_installed fact
-  set_fact:
+  ansible.builtin.set_fact:
     kubectl_installed: "{{ kubectl_stat.stat.exists }}"
 
 - name: Add required tools (Debian/Ubuntu)
-  apt:
+  ansible.builtin.apt:
     name:
       - gnupg
       - software-properties-common
@@ -22,22 +22,29 @@
   become: true
 
 - name: Retrieve the latest kubectl version
-  command:
+  ansible.builtin.command:
     cmd: "curl -L -s https://dl.k8s.io/release/stable.txt"
   register: latest_kubectl_version
   changed_when: false
 
 - name: Install kubectl using binary
   block:
+    - name: Download kubectl checksum
+      ansible.builtin.command:
+        cmd: "curl -L -s https://dl.k8s.io/release/{{ latest_kubectl_version.stdout }}/bin/linux/amd64/kubectl.sha256"
+      register: kubectl_checksum
+      changed_when: false
+
     - name: Download kubectl binary
-      get_url:
+      ansible.builtin.get_url:
         url: "https://dl.k8s.io/release/{{ latest_kubectl_version.stdout }}/bin/linux/amd64/kubectl"
         dest: "/tmp/kubectl"
         mode: '0755'
+        checksum: "sha256:{{ kubectl_checksum.stdout }}"
         force: false
 
     - name: Install kubectl
-      copy:
+      ansible.builtin.copy:
         src: "/tmp/kubectl"
         dest: "/usr/local/bin/kubectl"
         owner: root
@@ -47,7 +54,7 @@
       become: true
 
     - name: Clean up the downloaded binary
-      file:
+      ansible.builtin.file:
         path: "/tmp/kubectl"
         state: absent
   when: not kubectl_installed

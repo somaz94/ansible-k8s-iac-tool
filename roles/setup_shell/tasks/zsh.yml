@@ -7,7 +7,7 @@
 
 - name: Ensure .zshrc exists
   file:
-    path: "{{ user_home.stdout }}/.zshrc"
+    path: "{{ user_home }}/.zshrc"
     state: touch
     owner: "{{ home_user }}"
     mode: '0644'
@@ -16,7 +16,7 @@
 
 - name: Append configurations to .zshrc for specific user
   blockinfile:
-    path: "{{ user_home.stdout }}/.zshrc"
+    path: "{{ user_home }}/.zshrc"
     block: |
       # kubectl configurations
       [[ $commands[kubectl] ]] && source <(kubectl completion zsh)

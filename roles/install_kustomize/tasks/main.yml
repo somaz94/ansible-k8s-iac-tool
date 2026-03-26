@@ -1,18 +1,29 @@
 ---
 - name: Check if Kustomize is installed
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/kustomize
   register: kustomize_stat
 
-- name: Download and install Kustomize
-  shell: "curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash"
-  args:
-    executable: /bin/bash
-  when: not kustomize_stat.stat.exists
-  changed_when: true
+- name: Install Kustomize
+  block:
+    - name: Download Kustomize install script
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
+        dest: "/tmp/install_kustomize.sh"
+        mode: '0755'
 
-- name: Move kustomize to /usr/local/bin if not present
-  command: mv kustomize /usr/local/bin/
-  become: true
+    - name: Run Kustomize install script
+      ansible.builtin.shell: "bash /tmp/install_kustomize.sh"
+      args:
+        executable: /bin/bash
+        chdir: /tmp
+
+    - name: Move kustomize to /usr/local/bin
+      ansible.builtin.command: mv /tmp/kustomize /usr/local/bin/
+      become: true
+
+    - name: Clean up install script
+      ansible.builtin.file:
+        path: "/tmp/install_kustomize.sh"
+        state: absent
   when: not kustomize_stat.stat.exists
-  changed_when: true

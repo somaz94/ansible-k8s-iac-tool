@@ -1,7 +1,7 @@
 ---
 - name: Append configurations to .bashrc for specific user
   blockinfile:
-    path: "{{ user_home.stdout }}/.bashrc"
+    path: "{{ user_home }}/.bashrc"
     block: |
       # kubectl configurations
       source <(kubectl completion bash)

@@ -1,6 +1,6 @@
 ---
 - name: Check if krew is installed
-  shell: kubectl krew version
+  ansible.builtin.shell: kubectl krew version
   args:
     executable: /bin/bash
   environment:
@@ -10,44 +10,47 @@
   changed_when: false
 
 - name: Ensure git is installed RHEL/CentOS
-  yum:
+  ansible.builtin.yum:
     name: git
     state: present
   become: true
   when: ansible_os_family == 'RedHat'
 
 - name: Get home directory of specific user
-  shell: "eval echo ~{{ home_user }}"
-  args:
-    executable: /bin/bash
-  register: user_home
-  changed_when: false
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ home_user }}"
+  when: krew_check.rc != 0
+
+- name: Set user home directory fact
+  ansible.builtin.set_fact:
+    user_home_dir: "{{ ansible_facts.getent_passwd[home_user][4] }}"
   when: krew_check.rc != 0
 
 - name: Install krew
   block:
     - name: Download and Install krew
-      shell: |
-        (
-          set -e;
-          if ! kubectl krew version; then
-            KREW_TMPDIR="{{ user_home.stdout }}/.krew_tmp"
-            mkdir -p "$KREW_TMPDIR" && cd "$KREW_TMPDIR" &&
-            OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
-            ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
-            KREW="krew-${OS}_${ARCH}" &&
-            curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
-            tar zxvf "${KREW}.tar.gz" &&
-            chmod +x ./"${KREW}" &&
-            ./"${KREW}" install krew
-            rm -rf "$KREW_TMPDIR"
-          fi
-        )
+      ansible.builtin.shell: |
+        set -eo pipefail
+        if kubectl krew version >/dev/null 2>&1; then
+          echo "krew already installed"
+          exit 0
+        fi
+        INSTALL_DIR="$(mktemp -d)"
+        trap 'rm -rf "${INSTALL_DIR}"' EXIT
+        cd "${INSTALL_DIR}"
+        OS="$(uname | tr '[:upper:]' '[:lower:]')"
+        ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')"
+        KREW="krew-${OS}_${ARCH}"
+        curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz"
+        tar zxvf "${KREW}.tar.gz"
+        chmod +x ./"${KREW}"
+        ./"${KREW}" install krew
       args:
         executable: /bin/bash
       environment:
-        KREW_ROOT: "{{ user_home.stdout }}/.krew"
-        PATH: "/usr/local/bin:{{ ansible_env.PATH }}:{{ user_home.stdout }}/.krew/bin"
+        KREW_ROOT: "{{ user_home_dir }}/.krew"
+        PATH: "/usr/local/bin:{{ ansible_env.PATH }}:{{ user_home_dir }}/.krew/bin"
       become: false
       register: krew_install_result
       changed_when: "'Added krew' in krew_install_result.stdout"

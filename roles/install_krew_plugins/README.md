@@ -5,7 +5,7 @@ This role installs and sets up `install_krew` and `install_krew_plugins for Kube
 ## Requirements
 
 - Ansible 2.9 or higher
-- Targeted OS: Deiban/Ubuntu, RHEL/CentOS (For now)
+- Targeted OS: Debian/Ubuntu, RHEL/CentOS (For now)
 
 ## Role Variables
 
@@ -13,7 +13,6 @@ Update the variables as required in `~/vars.yml`:
 
 ```bash
 home_user: "" # home_user
-krew_version: "v0.4.4"
 krew_plugins:
   - "ctx"
   - "neat"
@@ -41,7 +40,7 @@ To use this role, include it in your playbook as follows:
   roles:
     - install_krew
     - install_krew_plugins
-    - setup_bashrc
+    - setup_shell
 ```
 
 ### Remote
@@ -57,5 +56,5 @@ To use this role, include it in your playbook as follows:
   roles:
     - install_krew
     - install_krew_plugins
-    - setup_bashrc
+    - setup_shell
 ```
