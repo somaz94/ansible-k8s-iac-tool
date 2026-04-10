@@ -6,6 +6,7 @@
 
 **Merged pull requests:**
 
+- chore\(deps\): bump dependabot/fetch-metadata from 2 to 3 [\#4](https://github.com/somaz94/ansible-k8s-iac-tool/pull/4) ([dependabot[bot]](https://github.com/apps/dependabot))
 - chore\(deps\): bump actions/github-script from 8 to 9 [\#3](https://github.com/somaz94/ansible-k8s-iac-tool/pull/3) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [v1.2.1](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.2.1) (2026-03-26)
