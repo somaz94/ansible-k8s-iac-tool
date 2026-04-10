@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.2.1](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.2.1) (2026-04-10)
+
+[Full Changelog](https://github.com/somaz94/ansible-k8s-iac-tool/compare/v1.2.1...v1.2.1)
+
+**Merged pull requests:**
+
+- chore\(deps\): bump actions/github-script from 8 to 9 [\#3](https://github.com/somaz94/ansible-k8s-iac-tool/pull/3) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.2.1](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.2.1) (2026-03-26)
 
 [Full Changelog](https://github.com/somaz94/ansible-k8s-iac-tool/compare/v1.2.0...v1.2.1)
