@@ -1,11 +1,12 @@
 # Changelog
 
-## [v1.2.1](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.2.1) (2026-04-10)
+## [v1.2.1](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.2.1) (2026-04-17)
 
 [Full Changelog](https://github.com/somaz94/ansible-k8s-iac-tool/compare/v1.2.1...v1.2.1)
 
 **Merged pull requests:**
 
+- chore\(deps\): bump softprops/action-gh-release from 2 to 3 [\#5](https://github.com/somaz94/ansible-k8s-iac-tool/pull/5) ([dependabot[bot]](https://github.com/apps/dependabot))
 - chore\(deps\): bump dependabot/fetch-metadata from 2 to 3 [\#4](https://github.com/somaz94/ansible-k8s-iac-tool/pull/4) ([dependabot[bot]](https://github.com/apps/dependabot))
 - chore\(deps\): bump actions/github-script from 8 to 9 [\#3](https://github.com/somaz94/ansible-k8s-iac-tool/pull/3) ([dependabot[bot]](https://github.com/apps/dependabot))
 
