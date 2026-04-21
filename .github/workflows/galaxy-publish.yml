@@ -5,28 +5,25 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run (build tarball + upload artifact, skip publish)"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: somaz94/ansible-galaxy-publish-action@v1
         with:
-          python-version: "3.x"
-
-      - name: Install Ansible
-        run: pip install ansible
-
-      - name: Build collection
-        run: ansible-galaxy collection build
-
-      - name: Publish to Ansible Galaxy
-        run: |
-          ansible-galaxy collection publish \
-            $(ls somaz94-ansible_k8s_iac_tool-*.tar.gz) \
-            --api-key=${{ secrets.GALAXY_API_KEY }}
+          type: collection
+          api_key: ${{ secrets.GALAXY_API_KEY }}
+          namespace: somaz94
+          name: ansible_k8s_iac_tool
+          dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
