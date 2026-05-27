@@ -1,15 +1,25 @@
 ---
+# Rule: PAM-repair MUST use ansible.builtin.raw with no become:.
+# RHEL-family containers ship /etc/pam.d/system-auth referencing pam_systemd_home.so
+# which fails inside Docker -> sudo blocked -> any module that triggers
+# sudo (become: true) deadlocks here. raw bypasses python+sudo entirely.
+# Local OrbStack runs as root and hides the break; GitHub Actions does not.
 - name: Prepare
   hosts: all
   gather_facts: false
   tasks:
     - name: Fix PAM configuration for Docker containers (RedHat family)
-      raw: |
+      ansible.builtin.raw: |
         if [ -f /etc/pam.d/system-auth ]; then
-          cp /etc/pam.d/system-auth /etc/pam.d/system-auth.bak
-          echo -e "auth sufficient pam_permit.so\naccount sufficient pam_permit.so\npassword sufficient pam_permit.so\nsession sufficient pam_permit.so" > /etc/pam.d/system-auth
+          cp /etc/pam.d/system-auth /etc/pam.d/system-auth.bak 2>/dev/null || true
+          cat > /etc/pam.d/system-auth <<'PAM'
+        auth sufficient pam_permit.so
+        account sufficient pam_permit.so
+        password sufficient pam_permit.so
+        session sufficient pam_permit.so
+        PAM
         fi
       changed_when: false
 
     - name: Gather facts after PAM fix
-      setup:
+      ansible.builtin.setup:

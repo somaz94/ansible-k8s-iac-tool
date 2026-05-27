@@ -1,5 +1,6 @@
-# Override home_user with the target user (required)
-home_user: "somaz"
+# Example fixture values used by molecule tests.
+# When consuming this collection externally, set home_user via your own inventory.
+home_user: "k8suser"
 user_shells:
   - bash
 krew_plugins:

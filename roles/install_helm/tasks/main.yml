@@ -1,21 +1,21 @@
 ---
 - name: Check if Helm is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/helm
+    path: "{{ helm_install_dir }}/helm"
   register: helm_stat
 
 - name: Install Helm
+  when: not helm_stat.stat.exists
   block:
     - name: Create temporary install directory
       ansible.builtin.tempfile:
         state: directory
         prefix: helm_install_
-        path: "{{ ansible_env.HOME }}"
       register: helm_tmpdir
 
     - name: Download Helm install script
       ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
+        url: "{{ helm_install_script_url }}"
         dest: "{{ helm_tmpdir.path }}/get-helm-3.sh"
         mode: '0755'
 
@@ -23,12 +23,15 @@
       ansible.builtin.shell: "bash {{ helm_tmpdir.path }}/get-helm-3.sh"
       args:
         executable: /bin/bash
+        creates: "{{ helm_install_dir }}/helm"
       environment:
-        HELM_INSTALL_DIR: "/usr/local/bin"
-        PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+        HELM_INSTALL_DIR: "{{ helm_install_dir }}"
+        PATH: "{{ helm_install_dir }}:{{ ansible_env.PATH }}"
+      become: true
+      register: helm_install_result
+      changed_when: helm_install_result.rc == 0
 
     - name: Clean up temporary install directory
       ansible.builtin.file:
         path: "{{ helm_tmpdir.path }}"
         state: absent
-  when: not helm_stat.stat.exists

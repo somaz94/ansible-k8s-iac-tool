@@ -1,4 +1,13 @@
 ---
+- name: Validate required role variables
+  ansible.builtin.assert:
+    that:
+      - home_user is defined
+      - home_user is string
+      - home_user | length > 0
+    fail_msg: "setup_shell requires `home_user` to be set (non-empty string)."
+    quiet: true
+
 - name: Get home directory of specific user
   ansible.builtin.getent:
     database: passwd
@@ -6,16 +15,16 @@
 
 - name: Set user home directory fact
   ansible.builtin.set_fact:
-    user_home: "{{ ansible_facts.getent_passwd[home_user][4] }}"
+    user_home_dir: "{{ ansible_facts.getent_passwd[home_user][4] }}"
 
 - name: Configure bash shell
-  include_tasks: bash.yml
+  ansible.builtin.include_tasks: bash.yml
   when: "'bash' in user_shells"
 
 - name: Configure zsh shell
-  include_tasks: zsh.yml
+  ansible.builtin.include_tasks: zsh.yml
   when: "'zsh' in user_shells"
 
 - name: Configure fish shell
-  include_tasks: fish.yml
+  ansible.builtin.include_tasks: fish.yml
   when: "'fish' in user_shells"

@@ -1,0 +1,3 @@
+---
+# Empty string installs the latest from the HashiCorp repo; set to "1.11.2" etc. to pin.
+packer_version: ""

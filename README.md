@@ -52,7 +52,7 @@ ansible-galaxy collection install somaz94.ansible_k8s_iac_tool
 Define variables in `vars.yml`:
 
 ```yaml
-home_user: "somaz"
+home_user: "k8suser"
 user_shells:
   - bash          # default
   # - zsh         # optional: configure .zshrc

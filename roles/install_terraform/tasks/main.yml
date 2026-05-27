@@ -1,52 +1,31 @@
 ---
 - name: Check if Terraform is installed
-  command: which terraform
+  ansible.builtin.command: which terraform
   register: terraform_check
   failed_when: false
   changed_when: false
 
-- name: Install yum-utils for RHEL/CentOS
-  yum:
-    name: yum-utils
+- name: Configure HashiCorp repository
+  ansible.builtin.include_role:
+    name: hashicorp_repo
+  when: terraform_check.rc != 0
+
+- name: Install Terraform (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: "{{ 'terraform=' + terraform_version if terraform_version | length > 0 else 'terraform' }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  when:
+    - ansible_os_family == 'Debian'
+    - terraform_check.rc != 0
+
+- name: Install Terraform (RHEL/CentOS)
+  ansible.builtin.dnf:
+    name: "{{ 'terraform-' + terraform_version if terraform_version | length > 0 else 'terraform' }}"
     state: present
   become: true
-  when: ansible_os_family == 'RedHat' and terraform_check.rc != 0
-
-- name: Install Terraform for Debian/Ubuntu
-  block:
-    - name: Add HashiCorp GPG key (Debian/Ubuntu)
-      shell: "wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null"
-      args:
-        executable: /bin/bash
-        creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
-      become: true
-
-    - name: Add HashiCorp repository (Debian/Ubuntu)
-      shell: 'echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list'
-      args:
-        executable: /bin/bash
-        creates: /etc/apt/sources.list.d/hashicorp.list
-      become: true
-
-    - name: Update apt and install Terraform (Debian/Ubuntu)
-      apt:
-        name: terraform
-        update_cache: true
-      become: true
-  when: ansible_os_family == 'Debian' and terraform_check.rc != 0
-
-- name: Install Terraform for RHEL/CentOS
-  block:
-    - name: Setup HashiCorp repo for Terraform (RHEL/CentOS)
-      shell: "yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
-      args:
-        executable: /bin/bash
-        creates: /etc/yum.repos.d/hashicorp.repo
-      become: true
-
-    - name: Install Terraform (RHEL/CentOS)
-      yum:
-        name: terraform
-        state: present
-      become: true
-  when: ansible_os_family == 'RedHat' and terraform_check.rc != 0
+  when:
+    - ansible_os_family == 'RedHat'
+    - terraform_check.rc != 0

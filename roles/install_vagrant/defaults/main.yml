@@ -1,0 +1,3 @@
+---
+# Empty string installs the latest from the HashiCorp repo; set to "2.4.1" etc. to pin.
+vagrant_version: ""

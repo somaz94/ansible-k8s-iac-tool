@@ -1,0 +1,5 @@
+---
+hashicorp_repo_apt_keyring: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+hashicorp_repo_apt_list: /etc/apt/sources.list.d/hashicorp.list
+hashicorp_repo_rhel_url: https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+hashicorp_repo_rhel_file: /etc/yum.repos.d/hashicorp.repo

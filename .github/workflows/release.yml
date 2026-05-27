@@ -40,9 +40,13 @@ jobs:
 
       - name: Append full changelog link
         if: steps.prev_tag.outputs.tag != ''
+        env:
+          PREV_TAG: ${{ steps.prev_tag.outputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
         run: |
           echo "" >> RELEASE.md
-          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.tag }}...${{ github.ref_name }}" >> RELEASE.md
+          echo "**Full Changelog**: https://github.com/${REPO}/compare/${PREV_TAG}...${REF_NAME}" >> RELEASE.md
 
       - name: "Create GitHub release"
         uses: softprops/action-gh-release@v3

@@ -1,0 +1,43 @@
+---
+- name: Configure HashiCorp APT repository (Debian/Ubuntu)
+  when: ansible_os_family == 'Debian'
+  block:
+    - name: Add HashiCorp GPG key (Debian/Ubuntu)
+      ansible.builtin.shell:
+        cmd: "set -o pipefail && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee {{ hashicorp_repo_apt_keyring }} > /dev/null"
+        executable: /bin/bash
+        creates: "{{ hashicorp_repo_apt_keyring }}"
+      become: true
+
+    - name: Add HashiCorp APT repository (Debian/Ubuntu)
+      ansible.builtin.shell:
+        cmd: >-
+          set -o pipefail &&
+          echo "deb [signed-by={{ hashicorp_repo_apt_keyring }}]
+          https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          | tee {{ hashicorp_repo_apt_list }} > /dev/null
+        executable: /bin/bash
+        creates: "{{ hashicorp_repo_apt_list }}"
+      become: true
+
+    - name: Refresh apt cache (Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: true
+      become: true
+      changed_when: false
+
+- name: Configure HashiCorp DNF repository (RHEL/CentOS)
+  when: ansible_os_family == 'RedHat'
+  block:
+    - name: Install dnf-utils (RHEL/CentOS)
+      ansible.builtin.dnf:
+        name: dnf-utils
+        state: present
+      become: true
+
+    - name: Add HashiCorp DNF repository (RHEL/CentOS)
+      ansible.builtin.shell:
+        cmd: "yum-config-manager --add-repo {{ hashicorp_repo_rhel_url }}"
+        executable: /bin/bash
+        creates: "{{ hashicorp_repo_rhel_file }}"
+      become: true

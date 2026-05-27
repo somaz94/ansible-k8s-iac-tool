@@ -14,73 +14,118 @@
       ansible.builtin.set_fact:
         user_home_dir: "{{ ansible_facts.getent_passwd[home_user][4] }}"
 
-    - name: Check if kubectl is installed
+    - name: Check kubectl is installed
       ansible.builtin.command: kubectl version --client
       register: kubectl_result
-      failed_when: kubectl_result.rc != 0
       changed_when: false
 
-    - name: Check if krew is installed
+    - name: Assert kubectl is installed
+      ansible.builtin.assert:
+        that:
+          - kubectl_result.rc == 0
+        fail_msg: "kubectl is not installed or not working"
+
+    - name: Check krew is installed
       ansible.builtin.command: "{{ user_home_dir }}/.krew/bin/kubectl-krew version"
       register: krew_result
-      failed_when: krew_result.rc != 0
       changed_when: false
 
-    - name: Check if krew plugins are installed
-      ansible.builtin.shell: "{{ user_home_dir }}/.krew/bin/kubectl-krew list | grep -w '{{ item }}'"
-      loop: "{{ krew_plugins }}"
-      register: plugin_check
-      failed_when: plugin_check.rc != 0
+    - name: Assert krew is installed
+      ansible.builtin.assert:
+        that:
+          - krew_result.rc == 0
+        fail_msg: "krew is not installed or not working"
+
+    - name: List installed krew plugins
+      ansible.builtin.command: "{{ user_home_dir }}/.krew/bin/kubectl-krew list"
+      register: krew_plugin_list
       changed_when: false
       environment:
         KREW_ROOT: "{{ user_home_dir }}/.krew"
 
-    - name: Check if helm is installed
+    - name: Assert all expected krew plugins are installed
+      ansible.builtin.assert:
+        that:
+          - item in krew_plugin_list.stdout
+        fail_msg: "krew plugin '{{ item }}' is not installed"
+      loop: "{{ krew_plugins }}"
+
+    - name: Check helm is installed
       ansible.builtin.command: which helm
       register: helm_result
-      failed_when: helm_result.rc != 0
+      failed_when: false
       changed_when: false
 
-    - name: Check if terraform is installed
+    - name: Assert helm is installed
+      ansible.builtin.assert:
+        that:
+          - helm_result.rc == 0
+        fail_msg: "helm is not installed"
+
+    - name: Check terraform is installed
       ansible.builtin.command: which terraform
       register: terraform_result
-      failed_when: terraform_result.rc != 0
-      changed_when: false
-
-    - name: Check if Packer is installed Debian/Ubuntu
-      ansible.builtin.command: packer version
-      register: packer_check_debian
       failed_when: false
       changed_when: false
-      when: ansible_os_family == 'Debian'
 
-    - name: Check if Packer is installed RHEL/CentOS
+    - name: Assert terraform is installed
+      ansible.builtin.assert:
+        that:
+          - terraform_result.rc == 0
+        fail_msg: "terraform is not installed"
+
+    - name: Check packer is installed
       ansible.builtin.command: which packer
-      register: packer_check_rhel
+      register: packer_result
       failed_when: false
       changed_when: false
-      when: ansible_os_family == 'RedHat'
 
-    - name: Check if vagrant is installed
+    - name: Assert packer is installed
+      ansible.builtin.assert:
+        that:
+          - packer_result.rc == 0
+        fail_msg: "packer is not installed"
+
+    - name: Check vagrant is installed
       ansible.builtin.command: which vagrant
       register: vagrant_result
-      failed_when: vagrant_result.rc != 0
+      failed_when: false
       changed_when: false
 
-    - name: Check if Pulumi binary exists in user's home directory
+    - name: Assert vagrant is installed (skipped on RHEL aarch64 - no upstream build)
+      ansible.builtin.assert:
+        that:
+          - vagrant_result.rc == 0
+        fail_msg: "vagrant is not installed"
+      when: not (ansible_os_family == 'RedHat' and ansible_architecture in ['aarch64', 'arm64'])
+
+    - name: Check Pulumi binary exists
       ansible.builtin.stat:
         path: "{{ user_home_dir }}/.pulumi/bin/pulumi"
       register: pulumi_binary
 
-    - name: Check if Pulumi is installed if binary exists
+    - name: Check Pulumi is functional
       ansible.builtin.command: "{{ user_home_dir }}/.pulumi/bin/pulumi version"
       register: pulumi_check
       failed_when: false
       changed_when: false
       when: pulumi_binary.stat.exists
 
-    - name: Check if kustomize is installed
+    - name: Assert Pulumi is installed
+      ansible.builtin.assert:
+        that:
+          - pulumi_binary.stat.exists
+          - pulumi_check.rc == 0
+        fail_msg: "Pulumi is missing or broken"
+
+    - name: Check kustomize is installed
       ansible.builtin.command: kustomize version
       register: kustomize_result
-      failed_when: kustomize_result.rc != 0
+      failed_when: false
       changed_when: false
+
+    - name: Assert kustomize is installed
+      ansible.builtin.assert:
+        that:
+          - kustomize_result.rc == 0
+        fail_msg: "kustomize is not installed"

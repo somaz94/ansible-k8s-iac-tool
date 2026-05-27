@@ -1,0 +1,5 @@
+---
+# Required: the unprivileged user under which krew is installed.
+# Override via inventory; no usable default is provided.
+home_user: ""
+krew_plugins: []

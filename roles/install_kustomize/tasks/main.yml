@@ -1,36 +1,38 @@
 ---
 - name: Check if Kustomize is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/kustomize
+    path: "{{ kustomize_install_path }}"
   register: kustomize_stat
 
 - name: Install Kustomize
+  when: not kustomize_stat.stat.exists
   block:
+    # /var/tmp is used instead of /tmp because the upstream install script
+    # extracts the kustomize binary into the tempdir and execs it in place.
+    # geerlingguy Docker base images mount /tmp with noexec, so /tmp would
+    # fail with "Permission denied" (rc 126).
     - name: Create temporary install directory
       ansible.builtin.tempfile:
         state: directory
         prefix: kustomize_install_
-        path: "{{ ansible_env.HOME }}"
+        path: /var/tmp
       register: kustomize_tmpdir
 
     - name: Download Kustomize install script
       ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
+        url: "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/kustomize/v{{ kustomize_version }}/hack/install_kustomize.sh"
         dest: "{{ kustomize_tmpdir.path }}/install_kustomize.sh"
         mode: '0755'
 
     - name: Run Kustomize install script
-      ansible.builtin.shell: "bash {{ kustomize_tmpdir.path }}/install_kustomize.sh"
+      ansible.builtin.shell: "bash {{ kustomize_tmpdir.path }}/install_kustomize.sh {{ kustomize_version }} {{ kustomize_install_path | dirname }}"
       args:
         executable: /bin/bash
         chdir: "{{ kustomize_tmpdir.path }}"
-
-    - name: Move kustomize to /usr/local/bin
-      ansible.builtin.command: "mv {{ kustomize_tmpdir.path }}/kustomize /usr/local/bin/"
+        creates: "{{ kustomize_install_path }}"
       become: true
 
     - name: Clean up temporary install directory
       ansible.builtin.file:
         path: "{{ kustomize_tmpdir.path }}"
         state: absent
-  when: not kustomize_stat.stat.exists

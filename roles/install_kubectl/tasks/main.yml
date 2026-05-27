@@ -1,7 +1,7 @@
 ---
 - name: Check if kubectl is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/kubectl
+    path: "{{ kubectl_install_path }}"
   register: kubectl_stat
 
 - name: Set kubectl_installed fact
@@ -18,43 +18,52 @@
       - git
     state: present
     update_cache: true
+    cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
   become: true
 
-- name: Retrieve the latest kubectl version
-  ansible.builtin.command:
-    cmd: "curl -L -s https://dl.k8s.io/release/stable.txt"
-  register: latest_kubectl_version
-  changed_when: false
+- name: Add required tools (RedHat)
+  # Note: `curl` is omitted because EL9 ships `curl-minimal` which already
+  # provides the curl binary; installing `curl` conflicts with curl-minimal.
+  ansible.builtin.dnf:
+    name:
+      - gnupg2
+      - wget
+      - git
+    state: present
+  when: ansible_os_family == 'RedHat'
+  become: true
+
+- name: Resolve kubectl version (latest stable when unset)
+  ansible.builtin.uri:
+    url: https://dl.k8s.io/release/stable.txt
+    return_content: true
+  register: kubectl_latest_query
+  when:
+    - not kubectl_installed
+    - kubectl_version | length == 0
+
+- name: Set effective kubectl version
+  ansible.builtin.set_fact:
+    kubectl_effective_version: "{{ kubectl_version if kubectl_version | length > 0 else kubectl_latest_query.content | trim }}"
+  when: not kubectl_installed
 
 - name: Install kubectl using binary
+  when: not kubectl_installed
   block:
-    - name: Download kubectl checksum
-      ansible.builtin.command:
-        cmd: "curl -L -s https://dl.k8s.io/release/{{ latest_kubectl_version.stdout }}/bin/linux/amd64/kubectl.sha256"
-      register: kubectl_checksum
-      changed_when: false
+    - name: Fetch kubectl checksum
+      ansible.builtin.uri:
+        url: "https://dl.k8s.io/release/{{ kubectl_effective_version }}/bin/linux/{{ kubectl_arch }}/kubectl.sha256"
+        return_content: true
+      register: kubectl_checksum_query
 
     - name: Download kubectl binary
       ansible.builtin.get_url:
-        url: "https://dl.k8s.io/release/{{ latest_kubectl_version.stdout }}/bin/linux/amd64/kubectl"
-        dest: "/tmp/kubectl"
-        mode: '0755'
-        checksum: "sha256:{{ kubectl_checksum.stdout }}"
-        force: false
-
-    - name: Install kubectl
-      ansible.builtin.copy:
-        src: "/tmp/kubectl"
-        dest: "/usr/local/bin/kubectl"
+        url: "https://dl.k8s.io/release/{{ kubectl_effective_version }}/bin/linux/{{ kubectl_arch }}/kubectl"
+        dest: "{{ kubectl_install_path }}"
         owner: root
         group: root
         mode: '0755'
-        remote_src: true
+        checksum: "sha256:{{ kubectl_checksum_query.content | trim }}"
+        force: false
       become: true
-
-    - name: Clean up the downloaded binary
-      ansible.builtin.file:
-        path: "/tmp/kubectl"
-        state: absent
-  when: not kubectl_installed

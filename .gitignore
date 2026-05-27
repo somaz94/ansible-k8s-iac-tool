@@ -12,6 +12,9 @@ venv/
 .cache/
 .molecule/
 
+# Ansible
+.ansible/
+
 # IDE
 .idea/
 .vscode/

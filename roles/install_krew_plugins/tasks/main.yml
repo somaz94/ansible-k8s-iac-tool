@@ -1,4 +1,13 @@
 ---
+- name: Validate required role variables
+  ansible.builtin.assert:
+    that:
+      - home_user is defined
+      - home_user is string
+      - home_user | length > 0
+    fail_msg: "install_krew_plugins requires `home_user` to be set (non-empty string)."
+    quiet: true
+
 - name: Get home directory of specific user
   ansible.builtin.getent:
     database: passwd
@@ -8,47 +17,25 @@
   ansible.builtin.set_fact:
     user_home_dir: "{{ ansible_facts.getent_passwd[home_user][4] }}"
 
-- name: Check if krew plugin is already installed
-  ansible.builtin.shell: "kubectl krew list | grep -w '{{ item }}'"
-  args:
-    executable: /bin/bash
-  loop: "{{ krew_plugins }}"
-  register: installed_plugins
+- name: List currently installed krew plugins
+  ansible.builtin.command: kubectl krew list
+  register: krew_list
   changed_when: false
-  failed_when: installed_plugins.rc > 1
+  failed_when: krew_list.rc > 1
+  environment:
+    KREW_ROOT: "{{ user_home_dir }}/.krew"
+    PATH: "/usr/local/bin:{{ user_home_dir }}/.krew/bin:{{ ansible_env.PATH }}"
   when: krew_plugins is defined
-  environment:
-    KREW_ROOT: "{{ user_home_dir }}/.krew"
-    PATH: "/usr/local/bin:{{ user_home_dir }}/.krew/bin:{{ ansible_env.PATH }}"
 
-- name: Install krew plugins for Debian/Ubuntu
-  ansible.builtin.shell: "kubectl krew install '{{ item }}'"
+- name: Install krew plugins
+  ansible.builtin.command: "kubectl krew install {{ item }}"
   loop: "{{ krew_plugins }}"
   when:
     - krew_plugins is defined
-    - "item not in installed_plugins.results|map(attribute='stdout')|list"
-    - ansible_os_family == 'Debian'
-  args:
-    executable: /bin/bash
+    - item not in krew_list.stdout_lines
   environment:
     KREW_ROOT: "{{ user_home_dir }}/.krew"
     PATH: "/usr/local/bin:{{ user_home_dir }}/.krew/bin:{{ ansible_env.PATH }}"
-  become: false
-  register: plugin_install_result
-  changed_when: "'Added plugin' in plugin_install_result.stdout"
-
-- name: Install krew plugins for RHEL/CentOS
-  ansible.builtin.shell: "kubectl krew install '{{ item }}'"
-  loop: "{{ krew_plugins }}"
-  when:
-    - krew_plugins is defined
-    - "item not in installed_plugins.results|map(attribute='stdout')|list"
-    - ansible_os_family == 'RedHat'
-  args:
-    executable: /bin/bash
-  environment:
-    KREW_ROOT: "{{ user_home_dir }}/.krew"
-    PATH: "{{ user_home_dir }}/.krew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
   become: false
   register: plugin_install_result
   changed_when: "'Added plugin' in plugin_install_result.stdout"

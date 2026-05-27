@@ -5,21 +5,22 @@
 
   pre_tasks:
     - name: Include group_vars
-      include_vars: ../../group_vars/all/vars.yml
+      ansible.builtin.include_vars: ../../group_vars/all/vars.yml
 
-    - name: Add user somaz
-      user:
+    - name: Add target user
+      ansible.builtin.user:
         name: "{{ home_user }}"
         shell: /bin/bash
-        createhome: true
+        create_home: true
 
-    - name: Update apt cache.
-      apt: 
+    - name: Update apt cache
+      ansible.builtin.apt:
         update_cache: true
+        cache_valid_time: 3600
       when: ansible_os_family == 'Debian'
 
-    - name: Update yum cache.
-      yum:
+    - name: Update dnf cache
+      ansible.builtin.dnf:
         update_cache: true
       when: ansible_os_family == 'RedHat'
 
@@ -37,12 +38,12 @@
 
   post_tasks:
     - name: Notify about shell config reload
-      debug:
+      ansible.builtin.debug:
         msg: "Shell configuration will be applied on the next session."
       changed_when: false
 
     - name: Set ownership for .krew directory
-      file:
+      ansible.builtin.file:
         path: "~{{ home_user }}/.krew"
         owner: "{{ home_user }}"
         group: "{{ home_user }}"

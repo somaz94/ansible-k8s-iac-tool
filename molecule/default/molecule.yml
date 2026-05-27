@@ -19,5 +19,10 @@ provisioner:
   name: ansible
   env:
     ANSIBLE_ROLES_PATH: ../../roles
+    # Required because molecule-plugins/docker destroy.yml uses
+    # `when: (lookup('env', 'HOME'))` which ansible-core >= 2.18 rejects
+    # as a broken (non-boolean) conditional. Until the plugin is patched,
+    # accept the string-truthy conditional.
+    ANSIBLE_ALLOW_BROKEN_CONDITIONALS: "True"
 verifier:
   name: ansible

@@ -1,0 +1,7 @@
+---
+# var-naming[no-role-prefix] is skipped because the collection's role variables
+# (home_user, krew_plugins, kubectl_version, ...) are user-facing override knobs.
+# Renaming them to e.g. setup_shell_home_user would be a breaking change for
+# existing consumers and would not improve clarity in practice.
+skip_list:
+  - var-naming[no-role-prefix]

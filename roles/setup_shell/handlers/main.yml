@@ -1,5 +1,5 @@
 ---
-- name: reload shell
-  debug:
+- name: Reload shell
+  ansible.builtin.debug:
     msg: "Shell configuration updated. Please reload your shell or start a new session."
   changed_when: false

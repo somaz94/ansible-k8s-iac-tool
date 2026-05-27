@@ -1,4 +1,13 @@
 ---
+- name: Validate required role variables
+  ansible.builtin.assert:
+    that:
+      - home_user is defined
+      - home_user is string
+      - home_user | length > 0
+    fail_msg: "install_pulumi requires `home_user` to be set (non-empty string)."
+    quiet: true
+
 - name: Get home directory of specific user
   ansible.builtin.getent:
     database: passwd
@@ -6,32 +15,31 @@
 
 - name: Set user home directory fact
   ansible.builtin.set_fact:
-    user_home: "{{ ansible_facts.getent_passwd[home_user][4] }}"
+    user_home_dir: "{{ ansible_facts.getent_passwd[home_user][4] }}"
 
 - name: Check if Pulumi binary exists in user's home directory
   ansible.builtin.stat:
-    path: "{{ user_home }}/.pulumi/bin/pulumi"
+    path: "{{ user_home_dir }}/.pulumi/bin/pulumi"
   register: pulumi_binary
 
 - name: Check if Pulumi is installed if binary exists
-  ansible.builtin.command: "{{ user_home }}/.pulumi/bin/pulumi version"
+  ansible.builtin.command: "{{ user_home_dir }}/.pulumi/bin/pulumi version"
   register: pulumi_check
   failed_when: false
   changed_when: false
-  ignore_errors: true
   when: pulumi_binary.stat.exists
 
 - name: Determine if Pulumi is already installed
   ansible.builtin.set_fact:
-    pulumi_installed: "{{ pulumi_binary.stat.exists and (('v' in (pulumi_check.stdout | default(''))) or ('v' in (pulumi_check.stderr | default('')))) }}"
-  changed_when: false
+    pulumi_installed: "{{ pulumi_binary.stat.exists and (pulumi_check.rc | default(1)) == 0 }}"
 
 - name: Download and install Pulumi in user's home directory
-  ansible.builtin.shell: "curl -fsSL https://get.pulumi.com | sh"
-  args:
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && curl -fsSL https://get.pulumi.com | sh"
     executable: /bin/bash
-    chdir: "{{ user_home }}"
+    chdir: "{{ user_home_dir }}"
+    creates: "{{ user_home_dir }}/.pulumi/bin/pulumi"
   become: true
   become_user: "{{ home_user }}"
   when: not pulumi_installed
-  changed_when: true
+  no_log: true

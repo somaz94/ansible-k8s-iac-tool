@@ -1,92 +1,64 @@
 ---
-- name: Check if Packer is installed Debian/Ubuntu
-  command: packer version
-  register: packer_check_debian
+- name: Check if Packer is installed
+  ansible.builtin.command: which packer
+  register: packer_check
   failed_when: false
   changed_when: false
-  when: ansible_os_family == 'Debian'
 
-- name: Check if Packer is installed RHEL/CentOS
-  command: /usr/bin/packer version
-  register: packer_check_rhel
-  failed_when: false
-  changed_when: false
-  when: ansible_os_family == 'RedHat'
+- name: Configure HashiCorp repository
+  ansible.builtin.include_role:
+    name: hashicorp_repo
+  when: packer_check.rc != 0
 
-- name: Install yum-utils RHEL/CentOS
-  yum:
-    name: yum-utils
+- name: Install Packer (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: "{{ 'packer=' + packer_version if packer_version | length > 0 else 'packer' }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  when:
+    - ansible_os_family == 'Debian'
+    - packer_check.rc != 0
+
+- name: Install Packer (RHEL/CentOS)
+  ansible.builtin.dnf:
+    name: "{{ 'packer-' + packer_version if packer_version | length > 0 else 'packer' }}"
     state: present
   become: true
-  when: ansible_os_family == 'RedHat' and packer_check_rhel.rc != 0
+  when:
+    - ansible_os_family == 'RedHat'
+    - packer_check.rc != 0
 
-- name: Install Packer for Debian/Ubuntu
-  block:
-    - name: Add HashiCorp GPG key (Debian/Ubuntu)
-      shell: "wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null"
-      args:
-        executable: /bin/bash
-        creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
-      become: true
-
-    - name: Add HashiCorp repository (Debian/Ubuntu)
-      shell: 'echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list'
-      args:
-        executable: /bin/bash
-        creates: /etc/apt/sources.list.d/hashicorp.list
-      become: true
-
-    - name: Update apt and install Packer for (Debian/Ubuntu)
-      apt:
-        name: packer
-        update_cache: true
-      become: true
-  when: ansible_os_family == 'Debian' and packer_check_debian.rc != 0
-
-- name: Install Packer for RHEL/CentOS
-  block:
-    - name: Setup HashiCorp repo for Packer (RHEL/CentOS)
-      shell: "yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
-      args:
-        executable: /bin/bash
-        creates: /etc/yum.repos.d/hashicorp.repo
-      become: true
-
-    - name: Install Packer (RHEL/CentOS)
-      yum:
-        name: packer
-        state: present
-      become: true
-  when: ansible_os_family == 'RedHat' and packer_check_rhel.rc != 0
-
-- name: Check if /sbin/packer exists
-  stat:
-    path: /sbin/packer
-  register: sbin_packer
+- name: Ensure /sbin/packer is a symlink (RHEL/CentOS)
   when: ansible_os_family == 'RedHat'
+  block:
+    - name: Stat /usr/bin/packer
+      ansible.builtin.stat:
+        path: /usr/bin/packer
+      register: usr_bin_packer
 
-- name: Check if /sbin/packer is a symlink to /usr/bin/packer
-  set_fact:
-    sbin_packer_needs_fix: "{{ sbin_packer.stat.exists and not sbin_packer.stat.islnk }}"
-  when:
-    - ansible_os_family == 'RedHat'
-    - sbin_packer.stat is defined
+    - name: Stat /sbin/packer
+      ansible.builtin.stat:
+        path: /sbin/packer
+      register: sbin_packer
+      when: usr_bin_packer.stat.exists
 
-- name: Remove non-symlink packer from /sbin
-  file:
-    path: /sbin/packer
-    state: absent
-  become: true
-  when:
-    - ansible_os_family == 'RedHat'
-    - sbin_packer_needs_fix | default(false)
+    - name: Remove non-symlink /sbin/packer
+      ansible.builtin.file:
+        path: /sbin/packer
+        state: absent
+      become: true
+      when:
+        - usr_bin_packer.stat.exists
+        - sbin_packer.stat is defined
+        - sbin_packer.stat.exists
+        - not sbin_packer.stat.islnk
 
-- name: Create symbolic link for packer in /sbin/
-  file:
-    src: /usr/bin/packer
-    dest: /sbin/packer
-    state: link
-  become: true
-  when:
-    - ansible_os_family == 'RedHat'
-    - sbin_packer_needs_fix | default(false)
+    - name: Symlink /sbin/packer to /usr/bin/packer
+      ansible.builtin.file:
+        src: /usr/bin/packer
+        dest: /sbin/packer
+        state: link
+      become: true
+      when: usr_bin_packer.stat.exists

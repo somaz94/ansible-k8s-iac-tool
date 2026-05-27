@@ -1,4 +1,13 @@
 ---
+- name: Validate required role variables
+  ansible.builtin.assert:
+    that:
+      - home_user is defined
+      - home_user is string
+      - home_user | length > 0
+    fail_msg: "install_krew requires `home_user` to be set (non-empty string)."
+    quiet: true
+
 - name: Check if krew is installed
   ansible.builtin.shell: kubectl krew version
   args:
@@ -9,12 +18,11 @@
   failed_when: false
   changed_when: false
 
-- name: Ensure git is installed RHEL/CentOS
-  ansible.builtin.yum:
+- name: Ensure git is installed
+  ansible.builtin.package:
     name: git
     state: present
   become: true
-  when: ansible_os_family == 'RedHat'
 
 - name: Get home directory of specific user
   ansible.builtin.getent:
@@ -28,6 +36,7 @@
   when: krew_check.rc != 0
 
 - name: Install krew
+  when: krew_check.rc != 0
   block:
     - name: Download and Install krew
       ansible.builtin.shell: |
@@ -40,8 +49,7 @@
         trap 'rm -rf "${INSTALL_DIR}"' EXIT
         cd "${INSTALL_DIR}"
         OS="$(uname | tr '[:upper:]' '[:lower:]')"
-        ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')"
-        KREW="krew-${OS}_${ARCH}"
+        KREW="krew-${OS}_{{ krew_arch }}"
         curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz"
         tar zxvf "${KREW}.tar.gz"
         chmod +x ./"${KREW}"
@@ -54,4 +62,3 @@
       become: false
       register: krew_install_result
       changed_when: "'Added krew' in krew_install_result.stdout"
-  when: krew_check.rc != 0

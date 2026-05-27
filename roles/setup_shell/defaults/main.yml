@@ -1,3 +1,6 @@
 ---
+# Required: the unprivileged user whose shell rc files are updated.
+# Override via inventory; no usable default is provided.
+home_user: ""
 user_shells:
   - bash

@@ -1,0 +1,6 @@
+---
+# Required: the unprivileged user under which Pulumi is installed.
+# Override via inventory; no usable default is provided.
+home_user: ""
+# Empty string installs the latest from get.pulumi.com; set to "3.130.0" etc. to pin.
+pulumi_version: ""
