@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.3.0](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.3.0) (2026-06-23)
+
+[Full Changelog](https://github.com/somaz94/ansible-k8s-iac-tool/compare/v1.3.0...v1.3.0)
+
+**Merged pull requests:**
+
+- chore\(deps\): bump actions/checkout from 6 to 7 [\#6](https://github.com/somaz94/ansible-k8s-iac-tool/pull/6) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.3.0](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.3.0) (2026-05-27)
 
 [Full Changelog](https://github.com/somaz94/ansible-k8s-iac-tool/compare/v1.2.1...v1.3.0)
