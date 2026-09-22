@@ -1,6 +1,6 @@
 namespace: somaz94
 name: ansible_k8s_iac_tool
-version: 1.3.0
+version: 1.4.0
 readme: README.md
 authors:
   - somaz <noreply@example.com>
