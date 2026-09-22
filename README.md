@@ -30,7 +30,7 @@ An Ansible collection for automating the installation and configuration of Kuber
 ## Requirements
 
 - Ansible 2.9+
-- Supported OS: Ubuntu 22.04+, Debian 11+, Rocky Linux 9+
+- Supported OS: Ubuntu 22.04+, Debian 12+, Rocky Linux 9+
 - Supported Shells: bash, zsh, fish
 
 <br/>

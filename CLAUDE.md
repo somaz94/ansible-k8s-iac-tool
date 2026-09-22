@@ -7,7 +7,7 @@ Ansible collection that automates installation of Kubernetes and IaC tools for L
 - **Language**: YAML (Ansible playbooks/roles)
 - **Type**: Ansible Galaxy collection (`somaz94.ansible_k8s_iac_tool`)
 - 10 roles: kubectl, Helm, Terraform, Packer, Vagrant, Kustomize, Pulumi, krew, shell config
-- Multi-distro: Ubuntu 22.04+, Debian 11+, Rocky Linux 9+
+- Multi-distro: Ubuntu 22.04+, Debian 12+, Rocky Linux 9+
 
 ## Key Directories
 

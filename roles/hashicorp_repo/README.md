@@ -49,6 +49,6 @@ This role is not used directly in a playbook. Consumer roles include it before t
 
 ## Supported Platforms
 
-- Debian: `bullseye`, `bookworm`
+- Debian: `bookworm`
 - Ubuntu: `jammy`, `noble`
 - EL: `9`
