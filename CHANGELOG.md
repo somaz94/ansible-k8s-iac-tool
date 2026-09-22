@@ -1,8 +1,8 @@
 # Changelog
 
-## [v1.3.0](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.3.0) (2026-06-23)
+## [v1.4.0](https://github.com/somaz94/ansible-k8s-iac-tool/tree/v1.4.0) (2026-09-22)
 
-[Full Changelog](https://github.com/somaz94/ansible-k8s-iac-tool/compare/v1.3.0...v1.3.0)
+[Full Changelog](https://github.com/somaz94/ansible-k8s-iac-tool/compare/v1.3.0...v1.4.0)
 
 **Merged pull requests:**
 
