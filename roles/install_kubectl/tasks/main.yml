@@ -23,8 +23,7 @@
   become: true
 
 - name: Add required tools (RedHat)
-  # Note: `curl` is omitted because EL9 ships `curl-minimal` which already
-  # provides the curl binary; installing `curl` conflicts with curl-minimal.
+  # No `curl`: EL9's curl-minimal already provides the binary and conflicts with it.
   ansible.builtin.dnf:
     name:
       - gnupg2

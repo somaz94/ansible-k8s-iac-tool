@@ -1,9 +1,7 @@
 ---
-# Rule: PAM-repair MUST use ansible.builtin.raw with no become:.
-# RHEL-family containers ship /etc/pam.d/system-auth referencing pam_systemd_home.so
-# which fails inside Docker -> sudo blocked -> any module that triggers
-# sudo (become: true) deadlocks here. raw bypasses python+sudo entirely.
-# Local OrbStack runs as root and hides the break; GitHub Actions does not.
+# PAM repair must use raw with no become: EL containers' system-auth references
+# pam_systemd_home.so, which fails in Docker and blocks sudo, so any become task deadlocks.
+# Local OrbStack runs as root and hides this; GitHub Actions does not.
 - name: Prepare
   hosts: all
   gather_facts: false
